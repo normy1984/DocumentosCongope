@@ -1,0 +1,64 @@
+https://www.firmadigital.gob.ec/wp-content/uploads/2021/10/Manual-de-Implementacion-FirmaEC-Institucional-Decentralizada-2.1.0.pdf
+ 
+https://minka.gob.ec/mintel/ge/firmaec
+FirmaEC · GitLab
+Sistema transversal que permite: firmar documentos, verificar documentos firmados electrónicamente, validar firmas digitales, proveer servicios web consumidos por otros sistemas gubernamentales. 
+ 
+
+http://quipux.congope.gob.ec:8080/interconexion/ws_firma_digital.php?wsdl
+
+This XML file does not appear to have any style information associated with it. The document tree is shown below.
+<definitions xmlns:typens="urn:soapapiorfeo" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns="http://schemas.xmlsoap.org/wsdl/" name="soapapiorfeo" targetNamespace="urn:soapapiorfeo">
+<types>
+<s:schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" targetNamespace="urn:soapapiorfeo">
+<s:complexType name="ResultElementArray">
+<s:complexContent>
+<s:restriction base="soapenc:Array">
+<s:attribute ref="soapenc:arrayType" wsdl:arrayType="s:string[]"/>
+</s:restriction>
+</s:complexContent>
+</s:complexType>
+<s:complexType name="UserQuery">
+<s:all>
+<s:element name="User" type="s:string"/>
+<s:element name="Password" type="s:string"/>
+</s:all>
+</s:complexType>
+</s:schema>
+</types>
+<message name="grabar_archivos_firmadosRequest">
+<part name="set_var_usuario" type="s:string"/>
+<part name="set_var_documento" type="s:string"/>
+<part name="set_var_archivo" type="s:base64Binary"/>
+<part name="set_var_datos_firmante" type="s:string"/>
+<part name="set_var_fecha" type="s:string"/>
+<part name="set_var_institucion" type="s:string"/>
+<part name="set_var_cargo" type="s:string"/>
+</message>
+<message name="grabar_archivos_firmadosResponse">
+<part name="result" type="s:string"/>
+</message>
+<portType name="soapapiorfeoPort">
+<operation name="grabar_archivos_firmados">
+<input message="typens:grabar_archivos_firmadosRequest"/>
+<output message="typens:grabar_archivos_firmadosResponse"/>
+</operation>
+</portType>
+<binding name="soapapiorfeoBinding" type="typens:soapapiorfeoPort">
+<soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+<operation name="grabar_archivos_firmados">
+<soap:operation soapAction="urn:soapapiorfeo/set_archivo"/>
+<input>
+<soap:body use="encoded" namespace="urn:soapapiorfeo" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</input>
+<output>
+<soap:body use="encoded" namespace="urn:soapapiorfeo" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</output>
+</operation>
+</binding>
+<service name="soapapiorfeoService">
+<port name="soapapiorfeoPort" binding="typens:soapapiorfeoBinding">
+<soap:address location="http://quipux.congope.gob.ec:8080/interconexion/ws_firma_digital.php"/>
+</port>
+</service>
+</definitions>
