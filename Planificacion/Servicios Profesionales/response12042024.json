@@ -1,0 +1,1082 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Congope.Empresas",
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/CuentasContables": {
+            "get": {
+                "tags": [
+                    "CuentasContables"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CuentasContableMO"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CuentasContableMO"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CuentasContableMO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/CuentasContables/{id}": {
+            "get": {
+                "tags": [
+                    "CuentasContables"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanCuentasMO"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanCuentasMO"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanCuentasMO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/CuentasContables/PlanCuentas/{cuenta}": {
+            "put": {
+                "tags": [
+                    "CuentasContables"
+                ],
+                "parameters": [
+                    {
+                        "name": "codigo",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "cuenta",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PlanCuentasMO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PlanCuentasMO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PlanCuentasMO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/api/EjercicioFiscal": {
+            "get": {
+                "tags": [
+                    "EjercicioFiscal"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EjercicioFiscalMO"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EjercicioFiscalMO"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EjercicioFiscalMO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Empresa": {
+            "get": {
+                "tags": [
+                    "Empresa"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EmpresaMO"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EmpresaMO"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EmpresaMO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Empresa"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EmpresaMO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EmpresaMO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EmpresaMO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Empresa/{id}": {
+            "get": {
+                "tags": [
+                    "Empresa"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EmpresaMO"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EmpresaMO"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EmpresaMO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Empresa"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/api/Empresa/{emp}": {
+            "put": {
+                "tags": [
+                    "Empresa"
+                ],
+                "parameters": [
+                    {
+                        "name": "emp",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EmpresaMO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EmpresaMO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EmpresaMO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/EstructuraCodigo": {
+            "get": {
+                "tags": [
+                    "EstructuraCodigo"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EstructuraCodigoMO"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EstructuraCodigoMO"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/EstructuraCodigoMO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/EstructuraCodigo/{est}": {
+            "put": {
+                "tags": [
+                    "EstructuraCodigo"
+                ],
+                "parameters": [
+                    {
+                        "name": "est",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EstructuraCodigoMO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EstructuraCodigoMO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EstructuraCodigoMO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/InventarioInicial": {
+            "get": {
+                "tags": [
+                    "InventarioInicial"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InventarioInicialMo"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InventarioInicialMo"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InventarioInicialMo"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/InventarioInicial/Documento": {
+            "get": {
+                "tags": [
+                    "InventarioInicial"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InventarioInicialMo_Documento"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InventarioInicialMo_Documento"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InventarioInicialMo_Documento"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/TablasGenerales": {
+            "get": {
+                "tags": [
+                    "TablasGenerales"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TablasGeneralesMo"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TablasGeneralesMo"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TablasGeneralesMo"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/TablasGenerales/Detalle/{codtab}": {
+            "get": {
+                "tags": [
+                    "TablasGenerales"
+                ],
+                "parameters": [
+                    {
+                        "name": "codtab",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TablasGenerales_DetalleMo"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TablasGenerales_DetalleMo"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TablasGenerales_DetalleMo"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CuentasContableMO": {
+                "type": "object",
+                "properties": {
+                    "cuenta": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "nom_cue": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "valtotal": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "DateOnly": {
+                "type": "object",
+                "properties": {
+                    "year": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "month": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "day": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "dayOfWeek": {
+                        "$ref": "#/components/schemas/DayOfWeek"
+                    },
+                    "dayOfYear": {
+                        "type": "integer",
+                        "format": "int32",
+                        "readOnly": true
+                    },
+                    "dayNumber": {
+                        "type": "integer",
+                        "format": "int32",
+                        "readOnly": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "DayOfWeek": {
+                "enum": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ],
+                "type": "integer",
+                "format": "int32"
+            },
+            "EjercicioFiscalMO": {
+                "type": "object",
+                "properties": {
+                    "id_per": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "des_per": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "fec_ini": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "fec_fin": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "estado": {
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "EmpresaMO": {
+                "type": "object",
+                "properties": {
+                    "codemp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "nom_emp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ruc_emp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "nomcomercial": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dir_emp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "tel1_emp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "tel2_emp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "fax1_emp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "email1": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "rep_emp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "rep_ruc": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cont_emp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cont_ruc": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "serieret": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "autoret": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ciudad": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "pathlogo": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "contrib_espe": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "provincia": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dfin_emp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dfin_ruc": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "teso_emp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "teso_ruc": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "aut_liq_comp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "region": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "EstructuraCodigoMO": {
+                "type": "object",
+                "properties": {
+                    "nivel": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "descripcion": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "longitud": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "item_aso": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "InventarioInicialMo": {
+                "type": "object",
+                "properties": {
+                    "cuenta": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "nom_cue": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cantidb": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "costo103": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "total": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "sec_det": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "InventarioInicialMo_Documento": {
+                "type": "object",
+                "properties": {
+                    "departamento": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "responsable": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "n_estado": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sig_tip": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "acu_tip": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "fec_asi": {
+                        "$ref": "#/components/schemas/DateOnly"
+                    },
+                    "bodrec02": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "PlanCuentasMO": {
+                "type": "object",
+                "properties": {
+                    "codigo": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cuenta_p": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cuenta": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "nom_cue": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ult_cue": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "niv_cue": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "aux_cue": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ban_cue": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "nivbal": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "tipocuec": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "por_iva": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "por_ret": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "renta": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ctapeaje": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ctatrans": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ctapago": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cta_evol": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ctapasateso": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cta_repcom": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cxc_iva_ret100_lrti": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cta_iess": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sal_inic": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sal_cre": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sal_inid": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sal_deb": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "TablasGeneralesMo": {
+                "type": "object",
+                "properties": {
+                    "codtab": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "descrip": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "TablasGenerales_DetalleMo": {
+                "type": "object",
+                "properties": {
+                    "codigo": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "descrip": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dato1": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dato2": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dato3": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dato4": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cuentadb": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cuentadevol": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cuentaddb": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cuentadcr": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            }
+        }
+    }
+}
