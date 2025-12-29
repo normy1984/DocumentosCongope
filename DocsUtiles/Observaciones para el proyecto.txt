@@ -1,0 +1,42 @@
+desarrollo en pareja
+parametros a nivel de modulo o a nivel general, tablas generales, cuentas contables
+login
+conexion bdd
+
+elaboracion HU, creacion y manejo en creacion de brach en Hu
+elaboracion de documento de pruebas tecnicas
+
+funcionalidad cracion de cuentas contables lo tienen en todos los mòdulos pero no se usa la primera vez se carga por un excel y de ahi ya no se usa
+definir responsabilidad, la persona encargada debe conocer para hacer cambios no sobre la misma persona de sistemas, tengo que aprender no es que x miedo
+explicacion general o asi delimitar y profundizamos la 1ra parte y poco a poco vamos definiendo alcances
+
+select 
+a.sig_tip||' ' ||a.acu_tip as siglasnum,a.num_com ,descrip,fec_asi,des_cab,tot_cre,comprom,cur,tot_deb--,*
+  from prcabmov a 
+left join tablas b on a.codemp = b.codemp and b.codigo > 0 and b.codtab = 2 and a.estado = b.codigo 
+where b.codemp='0004' and anio=2024 and  a.sig_tip ='CE'
+--sig_tip1='CE'
+order by a.sig_tip, a.acu_tip desc
+-- and des_cab like '%coordinador%'
+
+Usuarios GADs y empresas publicas son los responsables
+
+certificado , reserva de dinero
+comprometido, obligacion a pagar
+Explicacion breve
+Programación, Formulación, Aprobación, Ejecución, Seguimiento y Control, Clausura y Liquidación.
+Articulo 115 código orgánico de planificación???
+COMPROMISO PRESUPUESTARIO??
+Fases de Establecimiento de presupuesto??? 
+De donde aparece ese articulo 2.35???
+La estimación se hace en base a una formula de calculo ¿??
+Proforma o proyecto de presupuesto????????’’ lo mismo q es???
+ Clasificador orientador de gasto?
+Masificador orientador de gastos?
+5corriente a 7inversion de acuerdo con que??? 
+Diferencia entre partida y Estructura programática???
+Se reajustan valores crea desde la unidad de planificación para el concepto del proyecto que se va a hacer? 
+Presupuesto plurianual 
+Que es una certificación???????? presupuestaria??
+registro de devengado es otro documento?
+Informe de la comisión de presupuesto?

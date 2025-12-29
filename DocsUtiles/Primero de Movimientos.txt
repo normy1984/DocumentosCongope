@@ -1,0 +1,440 @@
+import { Component, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+
+import Swal from 'sweetalert2'
+import { EditModule } from 'app/paginas/generico/edit.module';
+import { ClienthttpCongopeService } from 'app/servicios/generico/clienthttp-congope.service';
+import { MovimientosPresupuestariosMo } from 'app/models/params/movpresupuestarios-mo';
+import { CryptService } from 'app/servicios/generico/crypt.service';
+import { AlertasSrvService } from 'app/servicios/generico/alertas-srv.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+//import { TipoComprobanteMo } from 'app/models/params/tipo-comprobante-mo';
+//import { PartidasPresupuestariasMo } from 'app/models/params/partidaspresupuestarias-mo';
+@Component({
+  selector: 'app-movpresupuestarios-edit',
+  standalone: true,
+  imports: [EditModule, MatDatepickerModule,    MatAutocompleteModule],
+  templateUrl: './movpresupuestarios-edit.component.html'
+})
+export class MovpresupuestariosEditComponent implements OnInit {[x: string]: any;
+  @Input('param') param!: string;
+  private ServicioClienteHttp = inject(ClienthttpCongopeService);
+  public alertas = inject(AlertasSrvService);
+  public formBuild = inject(FormBuilder);
+  private ServicioCrypt = inject(CryptService);
+  public isReadOnly: boolean = false;
+  public FormularioDatos!: UntypedFormGroup;
+  public accion: string = "NUEVO REGISTRO";
+  public evento: string = "";
+  public pk_identificador: string = "";
+  objeto: any;
+  public active_item!: string;
+  public codtab!: number;
+  //public ban_CargaEstructura: number = 0;
+
+/**
+ * PARAMETRIZACION DE LAS RUTAS DONDE SE REDIRIGE LA PAGINA Y DE DONDE SE CARGA EL API */  
+  public pagina: string = "params/movimientos";
+  public rutaapi: string = "MovimientosPresupuestarios";
+  //public OptionsEstructura: any[] = [];
+  public OptionsEstructura1: any[] = [];
+  //public OptionsEstructuraDepartamentos: any[] = [];
+  public rutaAlterna: string = "";
+  public opcionserv: string = "";
+  blankObject = {} as MovimientosPresupuestariosMo;
+  //blankObjectUno = {} as TipoComprobanteMo;
+  ModeloDatos: MovimientosPresupuestariosMo = new MovimientosPresupuestariosMo(this.blankObject);
+  //ModeloDatosUno: TipoComprobanteMo = new TipoComprobanteMo(this.blankObjectUno);
+ 
+  //PAra select combo
+  //@ViewChild('cuenta_debito') cuenta_debito!: ElementRef<HTMLInputElement>;
+  @ViewChild('partidadb') partidadb!: ElementRef<HTMLInputElement>;
+  //@ViewChild('departamentodb') departamentodb!: ElementRef<HTMLInputElement>;
+  @ViewChild('solicita_desc') solicita_desc!: ElementRef<HTMLInputElement>;
+  @ViewChild('departam_desc') departam_desc!: ElementRef<HTMLInputElement>;
+  //OpcionesCuentaDebito!: any[];
+  OpcionesCuentaDebito1!: any[];
+ // OpcionesDepartamentos!: any[];
+  public OpcionesDepartamentos!: any[];
+  public OpcionesResponsables!: any[];
+  public EstructuraDepartamentos!: any[];
+  public EstructuraResponsables!: any[];
+
+  constructor(
+    private router: Router,
+    public dialog: MatDialog,
+  ) {
+  }
+
+  ngOnInit(): void {
+    let datos = this.ServicioCrypt.decryptString(this.param);
+    let arrayResultado = datos.split('||');
+    this.evento = arrayResultado[0];
+    this.pk_identificador = arrayResultado[1];
+    this.codtab = parseInt(arrayResultado[2]);
+    this.active_item = arrayResultado[3];
+    this.ServicioClienteHttp.SeteoRuta(this.rutaapi);   
+    //this.CargarSelectEstructura();
+    if (this.evento == "EDITAR") {
+      this.isReadOnly = true;
+      this.accion = "MANTENIMIENTO";
+      this.ServicioClienteHttp.Obtener_x_Codigo(this.pk_identificador).subscribe({
+        next: (data) => {
+          if (data.success) {
+            let result: any = data.result;
+            let resultado: MovimientosPresupuestariosMo = result[0];
+            this.FormularioDatos.patchValue({
+
+              siglasnum: resultado.siglasnum,
+              num_com: resultado.num_com,
+              descrip: resultado.descrip,
+              fec_asi: resultado.fec_asi,
+              fec_apr: resultado.fec_apr,
+              des_cab: resultado.des_cab,
+              tot_cre: resultado.tot_cre,
+              tot_deb: resultado.tot_deb,
+              codigo_est:resultado.codigo_est,
+              cuenta_debito: resultado.cuentadb,
+              partidadb: resultado.partidadb,
+              departamentodb: resultado.departamentodb,
+            });
+            this.CargarDatosDepartamento();
+            this.CargarDatosResponsables();
+          }
+        },
+        error: (err) => {
+          console.log(err.message)
+        }
+      })
+    }
+    this.FormularioDatos = this.CrearFormulario();
+  }
+
+
+
+
+  CrearFormulario(): UntypedFormGroup {
+    return this.formBuild.group({
+      siglasnum: [{value: this.ModeloDatos.siglasnum, disabled: this.isReadOnly }],//[Validators.required, Validators.pattern('[a-zA-Z]*'), Validators.maxLength(2)]
+      num_com: [this.ModeloDatos.num_com,[Validators.required]],
+      descrip: [this.ModeloDatos.descrip],
+      fec_asi: [this.ModeloDatos.fec_asi],
+      fec_apr: [this.ModeloDatos.fec_apr],
+      des_cab: [this.ModeloDatos.des_cab, [Validators.required]],
+      tot_cre: [this.ModeloDatos.tot_cre],
+      tot_deb: [{value:this.ModeloDatos.tot_deb, disabled: this.isReadOnly}],
+      codigo_est: [this.ModeloDatos.codigo_est],
+      cuenta_debito: [{value: this.ModeloDatos.cuentadb}],
+      partidadb:[{value: this.ModeloDatos.partidadb}],
+      departamentodb:[{value: this.ModeloDatos.departamentodb}],
+    });
+  }
+
+/**
+ * Funcion utilizada para guardar la informacion que se carga en el grid
+ */
+  GuardarInformacion() {
+    this.ServicioClienteHttp.SeteoRuta(this.rutaapi);
+    Swal.fire({
+      title: "Esta seguro de realizar los cambios?",
+      showDenyButton: true,
+      confirmButtonText: "Guardar",
+      denyButtonText: "Cancelar"
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+
+        let datosGuardar = this.FormularioDatos.getRawValue();
+        const objeto: MovimientosPresupuestariosMo = {
+
+          siglasnum: datosGuardar.siglasnum,
+          num_com: datosGuardar.num_com,
+          descrip: datosGuardar.descrip,
+          fec_asi: datosGuardar.fec_asi,
+          fec_apr: datosGuardar.fec_apr,
+          des_cab: datosGuardar.des_cab,
+          tot_cre: datosGuardar.tot_cre,
+          tot_deb: datosGuardar.tot_deb,
+          codigo_est: datosGuardar.codigo_est,
+          cuentadb: datosGuardar.cuenta_debito,
+          partidadb:datosGuardar.partidadb,
+          departamentodb:datosGuardar.departamentodb,
+        }
+
+        if (this.pk_identificador == "-1") {
+          this.ServicioClienteHttp.Insertar(objeto).subscribe({
+            next: (data) => {
+              if (data.success) {
+                this.alertas.MensajeExito(this.pagina);
+              } else {
+                this.alertas.MensajeError(data.message);
+              }
+            },
+            error: (err) => {
+              console.log(err.message)
+            }
+          })
+        } else {
+          this.ServicioClienteHttp.Actualizar(this.pk_identificador, objeto).subscribe({
+            next: (data) => {
+              if (data.success) {
+                this.alertas.MensajeExito(this.pagina);
+              } else {
+                this.alertas.MensajeError(data.message);
+              }
+            },
+            error: (err) => {
+              console.log(err.message)
+            }
+          })
+        }
+
+      }
+    });
+  }
+
+  /**
+   * Funcion que llama a un filtro de informacion para los campos autocomplete
+   * @param opcion 
+   */
+ FiltroAutocomplete(opcion: string) {
+  var filterValue = '';
+  switch (opcion) {
+    case "solicita_desc":
+      filterValue = this.solicita_desc.nativeElement.value.toLowerCase();
+      this.OpcionesResponsables = 
+      this.EstructuraResponsables.filter(
+        option => 
+          {
+            const textMatch = option.descrip.toLowerCase().includes(filterValue);
+            return textMatch;
+          }
+      );
+      this.FormularioDatos.patchValue({
+        solicita: this.OpcionesResponsables[0].codigo.toString(),
+      });
+      break;
+     
+    case "departam_desc":
+      
+      filterValue = this.departam_desc.nativeElement.value.toLowerCase();
+      this.OpcionesDepartamentos = 
+      this.EstructuraDepartamentos.filter(
+        option => 
+          {
+             const textMatch = option.descrip.toLowerCase().includes(filterValue);
+             return textMatch;
+          }
+      );
+      this.FormularioDatos.patchValue({
+        departam: this.OpcionesDepartamentos[0].codigo.toString(),
+      });
+      break;
+  }
+}
+  /*CargarSelectEstructura()
+  {
+    this.ServicioClienteHttp.SeteoRuta("CuentasContables?pag=1&reg=5");
+    
+    this.ServicioClienteHttp.Obtener_Lista().subscribe({
+      next: (data) => {
+        if (data.success) {
+          this.OptionsEstructura = data.result;
+          this.CargarAutocomplete();
+        }
+        else {
+          this.alertas.MensajeError(data.message);
+        }
+
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }*/
+
+  CargarSelectEstructura1(rutaAlterna: string, opcionserv:string)
+  {
+    this.ServicioClienteHttp.SeteoRuta(rutaAlterna);
+    
+    this.ServicioClienteHttp.Obtener_Lista().subscribe({
+      next: (data) => {
+        if (data.success) {
+          switch (opcionserv) {
+            case "partidadb":
+             // let resultado:any=data.result;
+            //  let resultado:any[]=JSON.parse(data.result);
+          this.OptionsEstructura1 = data.result;
+          break;
+          case "departamentodb":
+         // this.OptionsEstructuraDepartamentos=JSON.parse(data.result);
+         // this.OptionsEstructuraDepartamentos=data.result;
+          break;
+          default:
+            break;
+        }
+          this.CargarAutocomplete();
+        }
+        else {
+          this.alertas.MensajeError(data.message);
+        }
+
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }
+/*
+  CargarSelectEstructuraDepartamento()
+  {
+    this.ServicioClienteHttp.SeteoRuta("TablasGenerales/DetalleDepartamentos/19");
+    
+    this.ServicioClienteHttp.Obtener_Lista().subscribe({
+      next: (data) => {
+        if (data.success) {
+          this.OptionsEstructuraDepartamentos = data.result;
+          this.CargarAutocomplete();
+        }
+        else {
+          this.alertas.MensajeError(data.message);
+        }
+
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }*/
+  /**
+ * Funcion que carga los valores iniciales del autocoomplete
+ */
+  CargarAutocomplete(){
+    //this.ban_CargaEstructura = 1;      
+  //  this.OpcionesCuentaDebito = this.OptionsEstructura.slice();  
+    this.OpcionesCuentaDebito1 = this.OptionsEstructura1.slice(); 
+   // this.OpcionesDepartamentos = this.OptionsEstructuraDepartamentos.slice();
+  }
+
+   /**
+   * Funcion que llama a un filtro de informacion para los campos autocomplete
+   * @param opcion 
+   */
+    /*
+   FiltroAutocomplete(opcion: string) {
+   // if(this.ban_CargaEstructura==0)this.CargarSelectEstructura();
+    this.CargarSelectEstructura();
+    
+
+
+    var filterValue = '';
+
+    switch (opcion) {
+      
+      case "cuenta_debito":
+        filterValue = this.cuenta_debito.nativeElement.value.toLowerCase();
+        this.OpcionesCuentaDebito = this.CargarDatosFiltrados(filterValue);
+       // this.OpcionesCuentaDebito1 = this.CargarDatosFiltrados1(filterValue);
+        break;
+    }   
+  }
+*/
+  
+  FiltroAutocomplete1(opcion: string) {
+    
+    var filterValue = '';
+
+    switch (opcion) {
+
+     /* case "cuenta_debito":
+        filterValue = this.cuenta_debito.nativeElement.value.toLowerCase();
+        this.OpcionesCuentaDebito = this.CargarDatosFiltrados(filterValue);
+       // this.OpcionesCuentaDebito1 = this.CargarDatosFiltrados1(filterValue);
+        break;*/
+      
+      case "partidadb":
+        filterValue = this.partidadb.nativeElement.value.toLowerCase();
+        this.opcionserv="partidadb";
+        this.OpcionesCuentaDebito1 = this.CargarDatosFiltrados1(filterValue,this.opcionserv);
+        this.rutaAlterna="PartidasPresupuestarias";
+        this.CargarSelectEstructura1(this.rutaAlterna,this.opcionserv);
+        break;
+        case "departamentodb":      
+      //  filterValue = this.departamentodb.nativeElement.value.toLowerCase();
+        this.opcionserv="departamentodb";  
+        this.OpcionesDepartamentos = this.CargarDatosFiltrados1(filterValue,this.opcionserv); 
+        this.rutaAlterna="TablasGenerales/DetalleDepartamentos/19";
+        this.CargarSelectEstructura1(this.rutaAlterna, this.opcionserv);
+        break;
+    }
+  }
+
+  /**
+   * Funcion para cargar el filtro de informacion a partir de la estructura de las partidas de gastos
+   * @param filterValue 
+   * @returns 
+   */
+  /*CargarDatosFiltrados(filterValue:string | null){
+    return this.OptionsEstructura.filter(
+      option => 
+        {
+          option.cuenta.toLowerCase().includes(filterValue)
+          const valueMatch = option.cuenta.toLowerCase().includes(filterValue);
+          const textMatch = option.nom_cue.toLowerCase().includes(filterValue);
+          return valueMatch || textMatch;
+        }
+    );
+  }*/
+  CargarDatosFiltrados1(filterValue:string | null,opcionserv:string){
+      switch (opcionserv) {
+        case "partidadb":
+              return this.OptionsEstructura1.filter(
+                option => 
+                  {
+                    option.out_cuenta.includes(filterValue)
+                    const valueMatch = option.out_cuenta.includes(filterValue);
+                    const textMatch = option.out_nom_cu.toLowerCase().includes(filterValue);
+                    return valueMatch || textMatch;
+                  }
+              );
+          break;
+         /* case "cuenta_debito":
+            return this.OptionsEstructura.filter(
+              option => 
+                {
+                  option.cuenta.toLowerCase().includes(filterValue)
+                  const valueMatch = option.cuenta.toLowerCase().includes(filterValue);
+                  const textMatch = option.nom_cue.toLowerCase().includes(filterValue);
+                  return valueMatch || textMatch;
+                }
+            );*/
+          case "departamentodb":
+            /*return this.OptionsEstructuraDepartamentos.filter(
+              option => 
+                {
+                  option.codigo.toString().includes(filterValue)
+                  const valueMatch = option.codtab.toString().includes(filterValue);
+                  const textMatch = option.descrip.toLowerCase().includes(filterValue);
+                  return  valueMatch ||textMatch; //valueMatch ||
+                }
+            );*/
+          default:
+            return [];
+          
+    }
+  }
+ /* CargarDatosDepartamentosFiltrados(filterValue:string | null){
+    return this.OptionsEstructura1.filter(
+      option => 
+        {
+          option.partidadb.toLowerCase().includes(filterValue)
+          const valueMatch = option.partidadb.toLowerCase().includes(filterValue);
+          const textMatch = option.nom_cue.toLowerCase().includes(filterValue);
+          return valueMatch || textMatch;
+        }
+    );
+  }*/
+}

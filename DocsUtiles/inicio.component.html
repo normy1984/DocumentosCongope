@@ -1,0 +1,146 @@
+<section class="content">
+  
+  <div class="content-block">
+    <app-breadcrumb 
+    [active_item]="'INICIO'"   [modulo]="nombreSistema">
+    </app-breadcrumb>
+      <div class="block-header">
+          <!-- Cabecera guia de página /[title]="'INICIO1'" [items]="['SFGProv']"-->        
+      </div>
+      <div class="row clearfix">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+          <div class="card">
+            <div class="header">
+              <h2>Ejecución Presupuestaria</h2>
+  
+            </div>
+            <div class="body" >
+              <div style="text-align:center">
+              <apx-chart [series]="barChartOptions.series!" [chart]="barChartOptions.chart!"
+                  [dataLabels]="barChartOptions.dataLabels!" [plotOptions]="barChartOptions.plotOptions!"
+                  [yaxis]="barChartOptions.yaxis!" [legend]="barChartOptions.legend!" [fill]="barChartOptions.fill!"
+                  [stroke]="barChartOptions.stroke!" [tooltip]="barChartOptions.tooltip!" [grid]="barChartOptions.grid!"
+                  [xaxis]="barChartOptions.xaxis!">
+                </apx-chart>
+              
+              </div>
+            </div>
+          </div>
+        </div>
+     
+
+    <!-- <div class="row clearfix">--> 
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" >
+          <div class="card" style="height: 450px;">
+            <div class="header">
+              <h2>Mapa</h2>
+              <div id="map" style="height: 400px; width: 80%; position: relative; top: 25px;"></div>
+           <!--   <script type="text/javascript"> 
+              console.log("Es layer"+layer);
+// Estilo personalizado para las divisiones
+const estiloDivisiones = {
+  color: '#3388ff',    // Color del borde
+  weight: 2,          // Grosor del borde
+  opacity: 1,         // Opacidad
+  fillColor: '#66ccff',  // Color de relleno
+  fillOpacity: 0.5    // Opacidad del relleno
+};
+
+// Cargar el archivo GeoJSON con la división política y personalizar el estilo
+fetch('assets/ecuador.geojson')
+  .then(response => response.json())
+  .then(data => {
+    console.log("Es layer"+data);
+    L.geoJSON(data, {
+      style: estiloDivisiones,
+      onEachFeature: function (feature, layer) {
+        if (properties && properties.nombre) {
+          layer.bindPopup('<b>' + properties.nombre + '</b>');  // Nombre de la provincia o cantón
+        }
+      }
+    }).addTo(map);  // Agregar al mapa
+  })
+  .catch(error => {
+    console.error('Error cargando el archivo GeoJSON: ', error);
+  });
+
+              </script>-->
+           <!--   <app-mapa></app-mapa>-->
+            <!-- <IMG Src="assets/images/mapa.png" border="0" USEMAP="#shapes" ALT="Ejemplo de mapa sensitivo" align="center"  width="300px">
+                <MAP NAME="shapes">
+                <AREA SHAPE="CIRCLE" COORDS="70,106,30" HREF="mapcircle.htm">
+                <AREA SHAPE="RECT" COORDS="111,32,177,78" HREF="maprect.htm">
+                <AREA SHAPE="POLY" COORDS="75,25,31,69,12,11" HREF="mapol.htm">
+                </MAP>--> 
+
+             <!--  <link type="text/css" href="jqvmap/jqvmap.css" rel="stylesheet" media="screen" />-->
+               
+              <!-- <script type="text/javascript" src="jqvmap/jquery.vmap.js"></script> -->
+             <!--   <script type="text/javascript" src="jqvmap/maps/jquery.vmap.ecuador.js"></script> -->
+
+ <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>-->
+            <!--   <script src="jqvmap/maps/jquery.vmap.world.js" type="text/javascript"></script>--> 
+              <!-- <script src="../jqvmap/data/jquery.vmap.sampledata.js" type="text/javascript"></script>--> 
+                 <!--'index.php?route=extension/dashboard/map/map&user_token={{ user_token }}'---> 
+              <!--  <script type="text/javascript">          
+                $(document).ready(function() {
+                  async function loadChart() {
+    let a = await obtenerObjetoAsincrono(); // Simulando una función asíncrona
+    console.log("prueba"+a.chart); // Accedes después de la carga completa
+}
+if (a && a.chart) {
+    console.log(a.chart);
+} else {
+    console.log('La propiedad chart no existe');
+}
+                  console.log("La respuesta del servidor es:");  
+                  $.ajax({
+                    url: 'http://localhost:5142/api/Mapa',
+                    dataType: 'json',
+                    success: function(json) {
+                      console.log("La respuesta del servidor es:", json);  
+                      data = [];                          
+                      for (i in json) {
+                        data[i] = json[i]['total'];
+                      }
+                          
+                      $('#vmap').vectorMap({
+                        map: 'ecuador_ec',
+                        backgroundColor: '#FFFFFF',
+                        borderColor: '#FFFFFF',
+                        color: '#9FD5F1',
+                        hoverOpacity: 0.7,
+                        selectedColor: '#666666',
+                        enableZoom: true,
+                        showTooltip: true,
+                        values: data,
+                        normalizeFunction: 'polynomial',
+                        onLabelShow: function(event, label, code) {
+                          if (json[code]) {
+                            label.html('<strong>' + label.text() + '</strong><br />' + '{{ text_solicitudes }} ' + json[code]['total'] + '<br />');
+                          }
+                        }
+                      });			
+                    },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                        }
+                  });			
+                });
+                </script> -->
+
+            
+                <!--aqui esto si es-->
+          </div>
+            <div class="body" >
+              <div class="container vertical">
+                   
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     <!-- </div>-->
+      
+  </div>
+</section>

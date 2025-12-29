@@ -1,0 +1,20 @@
+@import '~jqvmap/dist/jqvmap.css';
+@import url('~jqvmap/dist/jqvmap.css');
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  }
+  
+  #chartdiv {
+    width: 100%;
+    height: 500px;
+  }
+  
+  #cities {
+    width: 100%;
+    height: 100px;
+  }
+
+  #map {
+    height: 500px;
+    width: 100%;
+  }

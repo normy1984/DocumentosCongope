@@ -1,0 +1,26 @@
+Curso Angular
+gist.github.com/sergiecode
+
+Angular
+https://youtu.be/soInCF7nbDw 
+
+Angular LAnguage Service Plantillas
+https://www.typescriptlang.org/docs/handbook/intro.html
+Documentación Angular
+https://docs.angular.lat/docs
+
+Error npm
+https://bertofern.wordpress.com/2019/01/08/solucion-node-js-npm-no-reconocido-como-comando-interno-o-externo/
+Restricciones de Seguridad
+https://es.stackoverflow.com/questions/321611/problema-con-scripts-en-visual-studio-code
+
+2
+9.2.1
+9.2.1.11
+9.2.1.119
+
+aNGULAR 17
+angular.dev
+https://angular.dev/tutorials/learn-angular
+
+

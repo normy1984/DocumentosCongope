@@ -1,0 +1,1640 @@
+codigo_est	3
+des_cab	'CONTRATACIÓN DE COORDINADOR DEL PROYECTO" DEL PROYECTO "FORTALECIMIENTO DE LA PLANIFICACIÓN PARA EL DESARROLLO TERRITORIAL Y APOYO EN LA ELABORACIÓN DE PDYOT PROVINCIALES" BAJO LA MODALIDAD SERVICIOS PROFESIONALES CON UNA RMU DE 2368 MAS IVA POR EL PERí\u008dODO DE 1 DE MARZO AL 30 DE NOVIEMBRE DE 2024'
+descrip	"APROBADO"
+fec_apr	"2024-05-18"
+fec_asi	"2024-02-29"
+num_com	"Memorando Nro. CONGOPE-PPDT-2024-0118-M"
+out_cre_por_desc	"KATIA FUSTILLOS"
+out_mod_por_desc	"KATIA FUSTILLOS"
+siglasnum	"CE 89"
+tot_cre	21312
+tot_deb	0
+
+-- DROP FUNCTION public.sps_movimientos_presupuestarios_codigo(varchar, int4, varchar, int4);
+
+CREATE OR REPLACE FUNCTION public.sps_movimientos_presupuestarios_codigo(in_codemp character varying, in_anio integer, in_codigo character varying, in_acutip integer)
+ RETURNS TABLE(siglasnum text, num_com character, descrip character, fec_asi character, fec_apr character, des_cab character varying, tot_cre double precision, tot_deb double precision, codigo_est integer, out_anio integer, out_departamento smallint, out_departam_desc text, out_cre_por character, out_mod_por character, out_valor_contrato numeric)
+ LANGUAGE plpgsql
+AS $function$
+/*
+ * CREACION DE LA FUNCION PARA VISUALIZAR MOVIMIENTOS PRESUPUESTARIOS
+ * CREADO POR NORMA ARCOS
+ * FECHA 09/05/2024
+ */
+
+
+begin
+return query
+ select 
+a.sig_tip||' ' ||a.acu_tip as siglasnum,a.num_com ,b.descrip,a.fec_asi,a.fec_apr,a.des_cab,a.tot_cre,a.tot_deb,a.estado,
+a.anio,a.departam,
+(select trim(t.descrip) from tablas t where t.codtab = 19 and t.codigo = a.departam) as departam_desc,
+a.cre_por,a.mod_por, valor_contrato 
+--,*
+  from prcabmov a 
+left join tablas b on a.codemp = b.codemp and b.codigo > 0 and b.codtab = 2 and a.estado = b.codigo 
+where b.codemp=in_codemp and anio=in_anio and  a.sig_tip =in_codigo and a.acu_tip=in_acutip
+order by a.sig_tip, a.acu_tip desc;
+end;
+
+$function$
+;
+---------------------------------
+-- DROP FUNCTION public.sps_movimientos_presupuestarios(varchar, int4, varchar);
+
+CREATE OR REPLACE FUNCTION public.sps_movimientos_presupuestarios(in_codemp character varying, in_anio integer, in_codigo character varying)
+ RETURNS TABLE(siglasnum text, num_com character, descrip character, fec_asi character, out_fec_apr character, des_cab character varying, tot_cre double precision, tot_deb double precision, codigo_est integer, out_anio integer, out_departamento smallint)
+ LANGUAGE plpgsql
+AS $function$
+/*
+ * CREACION DE LA FUNCION PARA VISUALIZAR MOVIMIENTOS PRESUPUESTARIOS
+ * CREADO POR NORMA ARCOS
+ * FECHA 09/05/2024
+ */
+
+
+begin
+
+ if (in_codigo!='') then
+        return query
+        select a.sig_tip||' ' ||a.acu_tip as siglasnum,a.num_com ,b.descrip,a.fec_asi,a.fec_apr ,a.des_cab,a.tot_cre,a.tot_deb,a.estado,a.anio,a.departam
+        from prcabmov a left join tablas b on a.codemp = b.codemp and b.codigo > 0 and b.codtab = 2 and a.estado = b.codigo 
+        where b.codemp=in_codemp and anio=in_anio and  a.sig_tip =in_codigo
+        order by a.sig_tip, a.acu_tip desc;
+else
+        return query
+        select a.sig_tip||' ' ||a.acu_tip as siglasnum,a.num_com ,b.descrip,a.fec_asi,a.fec_apr,a.des_cab,a.tot_cre,a.tot_deb,a.estado,a.anio,a.departam
+        from prcabmov a left join tablas b on a.codemp = b.codemp and b.codigo > 0 and b.codtab = 2 and a.estado = b.codigo 
+        where b.codemp=in_codemp and anio=in_anio
+        order by a.sig_tip, a.acu_tip desc;
+    end if;
+end;
+
+$function$
+;
+
+
+
+
+
+
+--------------------------------------
+
+<section class="content">
+    <div class="content-block">
+        <div class="block-header">
+            <!-- Cabecera guia de página -->
+            <app-breadcrumb 
+                [title]="'MOVIMIENTOS PRESUPUESTARIOS'" 
+                [items]="['Parametrización']"
+                [active_item]="'Movimientos Presupuestarios'">
+            </app-breadcrumb>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="materialTableHeader">
+                        <div class="modalHeader clearfix">
+                            <div class="modal-about">
+                                {{accion}}
+                            </div>
+                        </div>
+                        <div class="right">
+                            <ul class="tbl-export-btn">
+                                <li class="tbl-header-btn">
+                                    <div class="m-l-10" matTooltip="VOLVER">
+                                        <button mat-mini-fab color="warn"
+                                            (click)="this.alertas.PaginaNavegar(this.pagina)">
+                                            <mat-icon class="col-white">arrow_back</mat-icon>
+                                        </button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <form class="register-form m-4" [formGroup]="FormularioDatos">
+                        <div class="row">
+                            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Documento</mat-label>
+                                    <input matInput formControlName="siglasnum">
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('required')) {
+                                    <mat-error>
+                                        La Sigla es requerida
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('pattern')) {
+                                    <mat-error>
+                                        La Sigla debe contener unicamente letras
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('maxlength')) {
+                                    <mat-error>
+                                        La Sigla debe tener maximo dos letras
+                                    </mat-error>
+                                    }
+                                </mat-form-field>
+
+                            </div>
+                            <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline">
+                                    <mat-label>Fecha As.</mat-label>
+                                    <input matInput [matDatepicker]="picker_fec_asi"  formControlName="fec_asi" (click)="AbrirPickerFecAsi()" >
+                                      <mat-datepicker-toggle matSuffix [for]="picker_fec_asi"></mat-datepicker-toggle>
+                                      <mat-datepicker #picker_fec_asi></mat-datepicker>
+                                      @if (FormularioDatos.get('fec_asi')?.hasError('pattern')) {
+                                        <mat-error>
+                                           La Fecha de Aprobacion tiene errores de ingreso
+                                        </mat-error>
+                                        }
+                                    </mat-form-field>
+                        </div>
+                        <div class="col-xl-2 col-lg2 col-md-6 col-sm-6 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline">
+                                    <mat-label>Aprobado</mat-label>
+                                    <input matInput [matDatepicker]="picker_fec_apr"  formControlName="fec_apr" (click)="AbrirPickerFecAprob()" >
+                                      <mat-datepicker-toggle matSuffix [for]="picker_fec_apr"></mat-datepicker-toggle>
+                                      <mat-datepicker #picker_fec_apr></mat-datepicker>
+                                      @if (FormularioDatos.get('fec_apr')?.hasError('pattern')) {
+                                        <mat-error>
+                                           La Fecha de Aprobacion tiene errores de ingreso
+                                        </mat-error>
+                                        }
+                                    </mat-form-field>
+                        </div>
+                            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Estado</mat-label>
+                                    <mat-select formControlName="codigo_est">
+                                        <mat-option [value]="1">
+                                            DIGITADO
+                                        </mat-option>
+                                        <mat-option [value]="2">
+                                          CUADRADO
+                                        </mat-option>
+                                        <mat-option [value]="3">
+                                          APROBADO
+                                        </mat-option>
+                                        <mat-option [value]="4">
+                                          CERRADO
+                                        </mat-option>
+                                      </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row">                           
+                            
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+
+                                    <mat-label>Comprobante</mat-label>
+                                    <input matInput formControlName="num_com">
+
+                                </mat-form-field>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Departamento</mat-label>
+                                    <input matInput formControlName="departam_desc" [matAutocomplete]="auto1"
+                                        type="text" placeholder="Selecciona un registro"
+                                        (input)="FiltroAutocomplete('departam_desc')"
+                                        (focus)="FiltroAutocomplete('departam_desc')" #departam_desc>
+                                    <mat-autocomplete #auto1="matAutocomplete" requireSelection>
+                                        @for (valores of OpcionesDepartamentos; track valores) {
+                                        <mat-option [value]="valores.descrip">
+                                            <small>{{valores.descrip}}</small> </mat-option>
+                                        }
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Descripción</mat-label>
+                                    <input matInput formControlName="des_cab">
+                                    @if (FormularioDatos.get('des_cab')?.hasError('required')) {
+                                    <mat-error>
+                                        La descripcion es requerida
+                                    </mat-error>
+                                    }  
+                                </mat-form-field>   
+                            </div>  
+                            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Responsable</mat-label>
+                                    <input matInput formControlName="responsable_desc" [matAutocomplete]="auto2"
+                                        type="text" placeholder="Selecciona un registro"
+                                        (input)="FiltroAutocomplete('responsable_desc')"
+                                        (focus)="FiltroAutocomplete('responsable_desc')" #responsable_desc>
+                                    <mat-autocomplete #auto2="matAutocomplete" requireSelection>
+                                        @for (valores of OpcionesResponsables; track valores) {
+                                        <mat-option [value]="valores.descrip">
+                                            <small>{{valores.descrip}}</small>
+                                        </mat-option>
+                                        }
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>                                                 
+                        </div>                   
+                        <div class="row">
+                            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Cod. Proceso</mat-label>
+                                    <input matInput formControlName="num_com">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Valor Contrato</mat-label>
+                                    <input matInput formControlName="tot_cre">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Creado Por:</mat-label>
+                                    <input matInput formControlName="out_cre_por_desc">
+                                   <!-- @if (FormularioDatos.get('siglasnum')?.hasError('required')) {
+                                    <mat-error>
+                                        La Sigla es requerida
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('pattern')) {
+                                    <mat-error>
+                                        La Sigla debe contener unicamente letras
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('maxlength')) {
+                                    <mat-error>
+                                        La Sigla debe tener maximo dos letras
+                                    </mat-error>
+                                    }-->
+                                </mat-form-field>
+
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Modificado Por:</mat-label>
+                                    <input matInput formControlName="out_mod_por_desc">
+                                   <!-- @if (FormularioDatos.get('siglasnum')?.hasError('required')) {
+                                    <mat-error>
+                                        La Sigla es requerida
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('pattern')) {
+                                    <mat-error>
+                                        La Sigla debe contener unicamente letras
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('maxlength')) {
+                                    <mat-error>
+                                        La Sigla debe tener maximo dos letras
+                                    </mat-error>
+                                    }-->
+                                </mat-form-field>
+
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                subscriptSizing="dynamic" >
+                                    <mat-label>Partida:</mat-label>
+                                    <input matInput
+                                    formControlName="partida_desc"
+                                    [matAutocomplete]="auto3"
+                                    type="text"
+                                    placeholder="Selecciona un registro"
+                                    (input)="FiltroAutocomplete('partida_desc')" 
+                                    (focus)="FiltroAutocomplete('partida_desc')"  #partida_desc>
+                                    
+                                    <mat-autocomplete #auto3="matAutocomplete" requireSelection >
+                                        @for (valores of OpcionesPartidas; track valores) {
+                                            <mat-option [value]="valores.out_nom_cu">
+                                              <small>{{valores.out_cuenta}}</small> ||
+                                              <small>{{valores.out_nom_cu}}</small>
+                                            </mat-option>
+                                          }
+                                    </mat-autocomplete>
+                                  </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row">                         
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Devengado?Utilizado? Monto</mat-label>
+                                    <input matInput formControlName="tot_deb">
+                                </mat-form-field>
+                            </div>                  
+                        </div> 
+                        <input formControlName="departam">
+                        <input formControlName="solicita">                                
+                    </form>
+                    <!--<div class="responsive_table">
+                        <table mat-table [dataSource]="dataSource" matSort class="mat-cell advance-table"
+                            style="border: 1px;">
+                            <!-- Item Column -->
+                           <!-- <ng-container matColumnDef="siglasnum">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>CERTIFICACIÓN</mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.siglasnum}}</mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
+                            <tr class="mat-row" *matNoDataRow>
+                                <td class="mat-cell" colspan="3">No existen datos para mostrar
+                                </td>
+                            </tr>
+                        </table>
+                    </div>-->
+                    <div class="row row-save">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4 text-end">
+                            <button mat-raised-button color="primary" [mat-dialog-close]="1"
+                                [disabled]="!FormularioDatos.valid" (click)="GuardarInformacion()">Guardar</button>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4 text-start">
+                            <button mat-flat-button color="warn" (click)="this.alertas.PaginaNavegar(this.pagina)"
+                                style="margin-left: 8px;">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</section>
+
+--------------------------------------------------------------------
+import { Component, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+
+import Swal from 'sweetalert2'
+import { EditModule } from 'app/paginas/generico/edit.module';
+import { ClienthttpCongopeService } from 'app/servicios/generico/clienthttp-congope.service';
+import { MovimientosPresupuestariosMo } from 'app/models/params/movpresupuestarios-mo';
+import { CryptService } from 'app/servicios/generico/crypt.service';
+import { AlertasSrvService } from 'app/servicios/generico/alertas-srv.service';
+import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { TipoComprobanteMo } from 'app/models/params/tipo-comprobante-mo';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { ListModule } from 'app/paginas/generico/list.module';
+
+@Component({
+  selector: 'app-certificado-edit',
+  standalone: true,
+  imports: [ListModule,EditModule, MatDatepickerModule,    MatAutocompleteModule],
+  templateUrl: './certificado-edit.component.html'
+})
+export class CertificadoEditComponent implements OnInit {[x: string]: any;
+  @Input('param') param!: string;
+  private ServicioClienteHttp = inject(ClienthttpCongopeService);
+  public alertas = inject(AlertasSrvService);
+  public formBuild = inject(FormBuilder);
+  public dataSource !: MatTableDataSource<any>;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
+  private ServicioCrypt = inject(CryptService);
+  public isReadOnly: boolean = false;
+  public FormularioDatos!: UntypedFormGroup;
+  public accion: string = "NUEVO REGISTRO";
+  public evento: string = "";
+  public pk_identificador: string = "";
+  objeto: any;
+   /**COLUMNAS MOSTRADAS */
+   public displayedColumns: string[] = [
+    "actions",
+    "certificacion",
+    "cuenta",
+    "nom_cue",
+    "val_cre",
+    "val_deb",
+    "val_sal",
+    "departam_desc","siglasnum"
+    ];
+  public active_item!: string;
+  public codtab!: number;
+  public ban_CargaEstructura: number = 0;
+
+/**
+ * PARAMETRIZACION DE LAS RUTAS DONDE SE REDIRIGE LA PAGINA Y DE DONDE SE CARGA EL API */  
+  public pagina: string = "movimientos/certificados";
+  public rutaapi: string = "MovimientosPresupuestarios";
+  public rutaAlterna:string="";
+ 
+
+  public OpcionesPartidas!: any[] ;
+  public OpcionesDepartamentos!: any[];
+  public OpcionesResponsables!: any[];
+
+  public EstructuraPartidas: any[] = [];
+  public EstructuraDepartamentos!: any[];
+  public EstructuraResponsables!: any[];
+
+  blankObject = {} as MovimientosPresupuestariosMo;
+  blankObjectUno = {} as TipoComprobanteMo;
+  ModeloDatos: MovimientosPresupuestariosMo = new MovimientosPresupuestariosMo(this.blankObject);
+ 
+  //PAra select combo
+  @ViewChild('partida_desc') partida_desc!: ElementRef<HTMLInputElement>;
+  @ViewChild('departam_desc') departam_desc!: ElementRef<HTMLInputElement>;
+  @ViewChild('responsable_desc') responsable_desc!: ElementRef<HTMLInputElement>;
+  @ViewChild('picker_fec_asi') picker_fec_asi!: MatDatepicker<Date>;
+  @ViewChild('picker_fec_apr') picker_fec_apr!: MatDatepicker<Date>;
+
+  OpcionesCuentaDebito!: any[];
+
+  constructor(
+    private router: Router,
+    public dialog: MatDialog,
+  ) {
+  }
+
+  ngOnInit(): void {
+
+    //let rutaA:string="";
+   // let rutaB:string="";
+    //rutaA="TablasGenerales/DetalleSinDiccionario/19";
+   
+    let datos = this.ServicioCrypt.decryptString(this.param);
+    let arrayResultado = datos.split('||');
+    this.evento = arrayResultado[0];
+    this.pk_identificador = arrayResultado[1];
+    this.CargarDatosDepartamento("TablasGenerales/DetalleSinDiccionario/19");
+    this.CargarDatosDepartamento("TablasGenerales/DetalleSinDiccionario/54"); 
+    this.CargarDatosDepartamento("PartidasPresupuestarias");    
+    this.CargarForm();
+    //this.CargarDepartamento(this.departam_desc);
+   // this.CargarGrid();
+    this.codtab = parseInt(arrayResultado[2]);
+    this.active_item = arrayResultado[3];
+  }
+
+/**
+ * Funcion que carga la informacion de la forma
+ */
+CargarForm():void {
+  this.ServicioClienteHttp.SeteoRuta(this.rutaapi);
+  if (this.evento == "EDITAR") {
+    this.isReadOnly = true;
+    this.accion = "MANTENIMIENTO";
+    this.ServicioClienteHttp.Obtener_x_Codigo(this.pk_identificador).subscribe({
+      next: (data) => {
+        if (data.success) {
+          let result: any = data.result;
+          let resultado: MovimientosPresupuestariosMo = result[0];
+          this.FormularioDatos.patchValue({
+            siglasnum: resultado.siglasnum,
+            num_com: resultado.num_com,
+            descrip: resultado.descrip,
+            fec_asi: resultado.fec_asi,
+            fec_apr: resultado.fec_apr,
+            des_cab: resultado.des_cab,
+            tot_cre: resultado.tot_cre,
+            tot_deb: resultado.tot_deb,
+            codigo_est:resultado.codigo_est,
+            out_departamento:resultado.out_departamento,
+            out_cre_por:resultado.out_cre_por,
+            out_mod_por:resultado.out_mod_por,
+            departam_desc:resultado.out_departam_desc,
+            responsable_desc:resultado.out_responsable_desc,
+            departam:resultado.out_departamento,
+            out_cre_por_desc:resultado.out_cre_por_desc,
+            out_mod_por_desc:resultado.out_mod_por_desc,
+          });
+
+        }
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }
+  this.FormularioDatos = this.CrearFormulario();
+}
+resultado: any[] = [];
+  CrearFormulario(): UntypedFormGroup {
+    return this.formBuild.group({
+      siglasnum: [{value: this.ModeloDatos.siglasnum, disabled: this.isReadOnly }],//[Validators.required, Validators.pattern('[a-zA-Z]*'), Validators.maxLength(2)]
+      num_com: [this.ModeloDatos.num_com,[Validators.required]],
+      descrip: [this.ModeloDatos.descrip],
+      fec_asi: [this.ModeloDatos.fec_asi],
+      fec_apr: [this.ModeloDatos.fec_apr],
+      des_cab: [this.ModeloDatos.des_cab, [Validators.required]],
+      tot_cre: [this.ModeloDatos.tot_cre],
+      tot_deb: [{value:this.ModeloDatos.tot_deb, disabled: this.isReadOnly}],
+      codigo_est: [this.ModeloDatos.codigo_est],
+      partida_desc: ["",[Validators.required]],
+      departam_desc: ["",[Validators.required]],
+      responsable_desc: ["",[Validators.required]],
+      partida: [0],
+      departam: [0],
+      solicita: [0], 
+      out_cre_por_desc:  [{value: this.ModeloDatos.out_cre_por_desc, disabled: this.isReadOnly }],
+      out_mod_por_desc:  [{value: this.ModeloDatos.out_cre_por_desc, disabled: this.isReadOnly }],
+    });
+  }
+
+/**
+ * Funcion utilizada para guardar la informacion que se carga en el grid
+ */
+  GuardarInformacion() {
+
+    Swal.fire({
+      title: "Esta seguro de realizar los cambios?",
+      showDenyButton: true,
+      confirmButtonText: "Guardar",
+      denyButtonText: "Cancelar"
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+
+        let datosGuardar = this.FormularioDatos.getRawValue();
+        const objeto: MovimientosPresupuestariosMo = {
+
+          siglasnum: datosGuardar.siglasnum,
+          num_com: datosGuardar.num_com,
+          descrip: datosGuardar.descrip,
+          fec_asi: datosGuardar.fec_asi,
+          fec_apr: datosGuardar.fec_apr,
+          des_cab: datosGuardar.des_cab,
+          tot_cre: datosGuardar.tot_cre,
+          tot_deb: datosGuardar.tot_deb,
+          codigo_est: datosGuardar.codigo_est,     
+          out_cre_por:datosGuardar.out_cre_por,   
+          out_mod_por:datosGuardar.out_mod_por, 
+          out_departam_desc:datosGuardar.out_departam_desc,
+          out_departamento:datosGuardar.out_departamento,
+          out_responsable_desc:datosGuardar.out_responsable_desc,
+          out_responsable:datosGuardar.out_responsable,      
+          out_cre_por_desc:datosGuardar.out_cre_por_desc,
+          out_mod_por_desc:datosGuardar.out_mod_por_desc,     
+        }
+
+        if (this.pk_identificador == "-1") {
+          this.ServicioClienteHttp.Insertar(objeto).subscribe({
+            next: (data) => {
+              if (data.success) {
+                this.alertas.MensajeExito(this.pagina);
+              } else {
+                this.alertas.MensajeError(data.message);
+              }
+            },
+            error: (err) => {
+              console.log(err.message)
+            }
+          })
+        } else {
+          this.ServicioClienteHttp.Actualizar(this.pk_identificador, objeto).subscribe({
+            next: (data) => {
+              if (data.success) {
+                this.alertas.MensajeExito(this.pagina);
+              } else {
+                this.alertas.MensajeError(data.message);
+              }
+            },
+            error: (err) => {
+              console.log(err.message)
+            }
+          })
+        }
+
+      }
+    });
+  }
+
+  AbrirPickerFecAsi(): void {
+    this.picker_fec_asi.open();
+  }
+  
+  AbrirPickerFecAprob():void{
+    this.picker_fec_apr.open();
+  }
+  
+/*  CargarSelectEstructura()
+  {
+    this.ServicioClienteHttp.SeteoRuta("CuentasContables?pag=1&reg=5");
+    
+    this.ServicioClienteHttp.Obtener_Lista().subscribe({
+      next: (data) => {
+        if (data.success) {
+          this.OptionsEstructura = data.result;
+          this.CargarAutocomplete();
+        }
+        else {
+          this.alertas.MensajeError(data.message);
+        }
+
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }
+*/
+  /**
+ * Funcion que carga los valores iniciales del autocoomplete
+ */
+ /* CargarAutocomplete(){
+    this.ban_CargaEstructura = 1;      
+    this.OpcionesCuentaDebito = this.OptionsEstructura.slice();  
+  }*/
+   /**
+   * Funcion que llama a un filtro de informacion para los campos autocomplete
+   * @param opcion 
+   */
+  
+   FiltroAutocomplete(opcion: string) {
+    var filterValue = '';
+
+    switch (opcion) {
+      
+      case "partida_des":
+        filterValue = this.partida_desc.nativeElement.value.toLowerCase();
+        this.OpcionesPartidas = 
+        this.EstructuraPartidas.filter(
+          option=>
+            {
+              const textMatch=option.out_nom_cu.toLowerCase().includes(filterValue);
+              return textMatch;
+           }
+       );
+       this.FormularioDatos.patchValue({
+         partida: this.OpcionesPartidas[0].out_cue.toString(),
+       });
+       break;
+
+
+      case "departam_desc": 
+      filterValue = this.departam_desc.nativeElement.value.toLowerCase();
+      this.OpcionesDepartamentos = 
+      this.EstructuraDepartamentos.filter(
+        option => 
+          {
+             const textMatch = option.descrip.toLowerCase().includes(filterValue);
+             return textMatch;
+          }
+      );
+      this.FormularioDatos.patchValue({
+        departam: this.OpcionesDepartamentos[0].codigo.toString(),
+      });
+      break;
+      case "responsable_desc":
+      filterValue = this.responsable_desc.nativeElement.value.toLowerCase();
+      this.OpcionesResponsables = 
+      this.EstructuraResponsables.filter(
+        option => 
+          {
+            const textMatch = option.descrip.toLowerCase().includes(filterValue);
+            return textMatch;
+          }
+      );
+      this.FormularioDatos.patchValue({
+        solicita: this.OpcionesResponsables[0].codigo.toString(),
+      });
+      break;
+        
+
+    }
+  }
+
+ 
+  /**
+   * Funcion para cargar el filtro de informacion a partir de la estructura de las partidas de gastos
+   * @param filterValue 
+   * @returns 
+   */
+ /* CargarDatosFiltrados(filterValue:string | null){
+    return this.OptionsEstructura.filter(
+      option => 
+        {
+          option.cuenta.toLowerCase().includes(filterValue)
+          const valueMatch = option.cuenta.toLowerCase().includes(filterValue);
+          const textMatch = option.nom_cue.toLowerCase().includes(filterValue);
+          return valueMatch || textMatch;
+        }
+    );
+  }*/
+
+  /**
+   * Carga informacion de departamento
+   */
+  CargarDatosDepartamento(rutaA:string)
+  {
+    let opcion:string;
+    if (rutaA.indexOf("/") >0){
+    let arrayResultado = rutaA.split('/');
+     opcion=arrayResultado[2];
+  }
+  else{
+    opcion='0';
+  }
+    this.ServicioClienteHttp.SeteoRuta(rutaA);
+    this.ServicioClienteHttp.Obtener_Lista().subscribe({
+      next: (data) => {
+        if (data.success) {
+        switch (opcion) {
+          case '19':
+            this.EstructuraDepartamentos= data.result;
+            this.OpcionesDepartamentos = this.EstructuraDepartamentos.slice();
+            break;
+            case '54':
+              this.EstructuraResponsables= data.result;
+              this.OpcionesResponsables = this.EstructuraResponsables.slice();
+            break;
+            case '0':
+              this.EstructuraPartidas= data.result;
+              this.OpcionesPartidas = this.EstructuraPartidas.slice();
+            break;
+            default:
+              break;
+        }
+          
+        }
+        else {
+          this.alertas.MensajeError(data.message);
+        }
+
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }
+
+   /**
+  * Funcion que genera la lista de datos para los grids de las pantallas
+  */
+   CargarGrid():void {
+      if (this.evento == "EDITAR") {
+      this.ServicioClienteHttp.SeteoRuta(this.rutaapi + "/CertificacionesDetalle");
+      this.ServicioClienteHttp.Obtener_x_Codigo(this.pk_identificador).subscribe({
+        next: (data) => {
+          
+          if (data.success) {
+            this.resultado = JSON.parse(data.result);
+          }
+          this.dataSource = new MatTableDataSource(this.resultado);
+          this.dataSource.sort = this.sort;
+          
+        },
+        error: (err) => {
+          console.log(err.message)
+        }
+      })
+    }
+  }
+
+ // CargarDepartamento(out_cre_por)
+/*  CargarDepartamento(out_cre_por:string){
+    this.ServicioClienteHttp.SeteoRuta("TablasGenerales/DetalleSinDiccionario/"+out_cre_por);
+    this.ServicioClienteHttp.Obtener_x_Codigo(this.pk_identificador).subscribe({
+      next: (data) => {
+        
+        if (data.success) {
+          this.resultado = JSON.parse(data.result);
+        }
+        this.dataSource = new MatTableDataSource(this.resultado);
+        this.dataSource.sort = this.sort;
+        
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }*/
+}
+
+----------------------------------------------------------------
+export class MovimientosPresupuestariosMo {
+   // codigo:number;
+    siglasnum:string;
+    num_com:string;
+    descrip:string;
+    fec_asi:string;
+    fec_apr:string;
+    des_cab:string;
+    tot_cre:number;
+    tot_deb:number;
+    codigo_est:number;
+    out_cre_por:string;
+    out_mod_por:string;
+    out_departamento:number;
+    out_departam_desc:string;
+    out_responsable:number;
+    out_responsable_desc:string;
+    out_cre_por_desc: string;
+    out_mod_por_desc: string;
+  // acu_tip:number;
+    constructor(datos: MovimientosPresupuestariosMo) {
+        {
+           // this.codigo = datos.codigo || 0;
+        //   this.acu_tip= datos.acu_tip || 0;
+            this.siglasnum = datos.siglasnum || '';
+            this.num_com = datos.num_com || '';
+            this.descrip = datos.descrip || '';
+            this.fec_asi = datos.fec_asi || '';
+            this.fec_apr = datos.fec_apr || '';
+            this.des_cab =  datos.des_cab || '';
+            this.tot_cre = datos.tot_cre || 0;
+            this.tot_deb = datos.tot_deb || 0;
+            this.codigo_est = datos.codigo_est || 0;
+            this.out_cre_por=datos.out_cre_por|| '';
+            this.out_mod_por=datos.out_mod_por|| '';
+            this.out_departam_desc=datos.out_departam_desc|| '';
+            this.out_departamento=datos.out_departamento|| 0;
+            this.out_responsable_desc=datos.out_responsable_desc|| '';
+            this.out_responsable=datos.out_responsable|| 0;
+            this.out_cre_por_desc= datos.out_cre_por_desc|| '0';
+            this.out_mod_por_desc= datos.out_mod_por_desc|| '0';
+
+        }
+    }
+}
+--------------------------
+import { Component, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+
+import Swal from 'sweetalert2'
+import { EditModule } from 'app/paginas/generico/edit.module';
+import { ClienthttpCongopeService } from 'app/servicios/generico/clienthttp-congope.service';
+import { MovimientosPresupuestariosMo } from 'app/models/params/movpresupuestarios-mo';
+import { CryptService } from 'app/servicios/generico/crypt.service';
+import { AlertasSrvService } from 'app/servicios/generico/alertas-srv.service';
+import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { TipoComprobanteMo } from 'app/models/params/tipo-comprobante-mo';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { ListModule } from 'app/paginas/generico/list.module';
+
+@Component({
+  selector: 'app-certificado-edit',
+  standalone: true,
+  imports: [ListModule,EditModule, MatDatepickerModule,    MatAutocompleteModule],
+  templateUrl: './certificado-edit.component.html'
+})
+export class CertificadoEditComponent implements OnInit {[x: string]: any;
+  @Input('param') param!: string;
+  private ServicioClienteHttp = inject(ClienthttpCongopeService);
+  public alertas = inject(AlertasSrvService);
+  public formBuild = inject(FormBuilder);
+  public dataSource !: MatTableDataSource<any>;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
+  private ServicioCrypt = inject(CryptService);
+  public isReadOnly: boolean = false;
+  public FormularioDatos!: UntypedFormGroup;
+  public accion: string = "NUEVO REGISTRO";
+  public evento: string = "";
+  public pk_identificador: string = "";
+  objeto: any;
+   /**COLUMNAS MOSTRADAS */
+   public displayedColumns: string[] = [
+  "cuenta",
+    "nom_cue",
+    "val_cre",
+    "val_deb",
+    "val_sal",
+     "val_dist"
+    ];
+  public active_item!: string;
+  public codtab!: number;
+  public ban_CargaEstructura: number = 0;
+
+/**
+ * PARAMETRIZACION DE LAS RUTAS DONDE SE REDIRIGE LA PAGINA Y DE DONDE SE CARGA EL API */  
+  public pagina: string = "movimientos/certificados";
+  public rutaapi: string = "MovimientosPresupuestarios";
+  public rutaAlterna:string="";
+ 
+
+  public OpcionesPartidas!: any[] ;
+  public OpcionesDepartamentos!: any[];
+  public OpcionesResponsables!: any[];
+
+  public EstructuraPartidas: any[] = [];
+  public EstructuraDepartamentos!: any[];
+  public EstructuraResponsables!: any[];
+
+  blankObject = {} as MovimientosPresupuestariosMo;
+  blankObjectUno = {} as TipoComprobanteMo;
+  ModeloDatos: MovimientosPresupuestariosMo = new MovimientosPresupuestariosMo(this.blankObject);
+ 
+  //PAra select combo
+  @ViewChild('partida_desc') partida_desc!: ElementRef<HTMLInputElement>;
+  @ViewChild('departam_desc') departam_desc!: ElementRef<HTMLInputElement>;
+  @ViewChild('responsable_desc') responsable_desc!: ElementRef<HTMLInputElement>;
+  @ViewChild('picker_fec_asi') picker_fec_asi!: MatDatepicker<Date>;
+  @ViewChild('picker_fec_apr') picker_fec_apr!: MatDatepicker<Date>;
+
+  OpcionesCuentaDebito!: any[];
+
+  constructor(
+    private router: Router,
+    public dialog: MatDialog,
+  ) {
+  }
+
+  ngOnInit(): void {
+
+    //let rutaA:string="";
+   // let rutaB:string="";
+    //rutaA="TablasGenerales/DetalleSinDiccionario/19";
+   
+    let datos = this.ServicioCrypt.decryptString(this.param);
+    let arrayResultado = datos.split('||');
+    this.evento = arrayResultado[0];
+    this.pk_identificador = arrayResultado[1];
+    this.CargarDatosDepartamento("TablasGenerales/DetalleSinDiccionario/19");
+    this.CargarDatosDepartamento("TablasGenerales/DetalleSinDiccionario/54"); 
+    this.CargarDatosDepartamento("PartidasPresupuestarias");    
+    this.CargarForm();
+    //this.CargarDepartamento(this.departam_desc);
+   // this.CargarGrid();
+    this.codtab = parseInt(arrayResultado[2]);
+    this.active_item = arrayResultado[3];
+  }
+
+/**
+ * Funcion que carga la informacion de la forma
+ */
+CargarForm():void {
+  this.ServicioClienteHttp.SeteoRuta(this.rutaapi);
+  if (this.evento == "EDITAR") {
+    this.isReadOnly = true;
+    this.accion = "MANTENIMIENTO";
+    this.ServicioClienteHttp.Obtener_x_Codigo(this.pk_identificador).subscribe({
+      next: (data) => {
+        if (data.success) {
+          let result: any = data.result;
+          let resultado: MovimientosPresupuestariosMo = result[0];
+          this.FormularioDatos.patchValue({
+            siglasnum: resultado.siglasnum,
+            num_com: resultado.num_com,
+            descrip: resultado.descrip,
+            fec_asi: resultado.fec_asi,
+            fec_apr: resultado.fec_apr,
+            des_cab: resultado.des_cab,
+            tot_cre: resultado.tot_cre,
+            tot_deb: resultado.tot_deb,
+            codigo_est:resultado.codigo_est,
+            out_departamento:resultado.out_departamento,
+            out_cre_por:resultado.out_cre_por,
+            out_mod_por:resultado.out_mod_por,
+            departam_desc:resultado.out_departam_desc,
+            responsable_desc:resultado.out_responsable_desc,
+            departam:resultado.out_departamento,
+            out_cre_por_desc:resultado.out_cre_por_desc,
+            out_mod_por_desc:resultado.out_mod_por_desc,
+          });
+
+        }
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }
+  this.FormularioDatos = this.CrearFormulario();
+}
+resultado: any[] = [];
+  CrearFormulario(): UntypedFormGroup {
+    return this.formBuild.group({
+      siglasnum: [{value: this.ModeloDatos.siglasnum, disabled: this.isReadOnly }],//[Validators.required, Validators.pattern('[a-zA-Z]*'), Validators.maxLength(2)]
+      num_com: [this.ModeloDatos.num_com,[Validators.required]],
+      descrip: [this.ModeloDatos.descrip],
+      fec_asi: [this.ModeloDatos.fec_asi],
+      fec_apr: [this.ModeloDatos.fec_apr],
+      des_cab: [this.ModeloDatos.des_cab, [Validators.required]],
+      tot_cre: [this.ModeloDatos.tot_cre],
+      tot_deb: [{value:this.ModeloDatos.tot_deb, disabled: this.isReadOnly}],
+      codigo_est: [this.ModeloDatos.codigo_est],
+      partida_desc: ["",[Validators.required]],
+      departam_desc: ["",[Validators.required]],
+      responsable_desc: ["",[Validators.required]],
+      partida: [0],
+      departam: [0],
+      solicita: [0], 
+      out_cre_por_desc:  [{value: this.ModeloDatos.out_cre_por_desc, disabled: this.isReadOnly }],
+      out_mod_por_desc:  [{value: this.ModeloDatos.out_cre_por_desc, disabled: this.isReadOnly }],
+    });
+  }
+
+/**
+ * Funcion utilizada para guardar la informacion que se carga en el grid
+ */
+  GuardarInformacion() {
+
+    Swal.fire({
+      title: "Esta seguro de realizar los cambios?",
+      showDenyButton: true,
+      confirmButtonText: "Guardar",
+      denyButtonText: "Cancelar"
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+
+        let datosGuardar = this.FormularioDatos.getRawValue();
+        const objeto: MovimientosPresupuestariosMo = {
+
+          siglasnum: datosGuardar.siglasnum,
+          num_com: datosGuardar.num_com,
+          descrip: datosGuardar.descrip,
+          fec_asi: datosGuardar.fec_asi,
+          fec_apr: datosGuardar.fec_apr,
+          des_cab: datosGuardar.des_cab,
+          tot_cre: datosGuardar.tot_cre,
+          tot_deb: datosGuardar.tot_deb,
+          codigo_est: datosGuardar.codigo_est,     
+          out_cre_por:datosGuardar.out_cre_por,   
+          out_mod_por:datosGuardar.out_mod_por, 
+          out_departam_desc:datosGuardar.out_departam_desc,
+          out_departamento:datosGuardar.out_departamento,
+          out_responsable_desc:datosGuardar.out_responsable_desc,
+          out_responsable:datosGuardar.out_responsable,      
+          out_cre_por_desc:datosGuardar.out_cre_por_desc,
+          out_mod_por_desc:datosGuardar.out_mod_por_desc,     
+        }
+
+        if (this.pk_identificador == "-1") {
+          this.ServicioClienteHttp.Insertar(objeto).subscribe({
+            next: (data) => {
+              if (data.success) {
+                this.alertas.MensajeExito(this.pagina);
+              } else {
+                this.alertas.MensajeError(data.message);
+              }
+            },
+            error: (err) => {
+              console.log(err.message)
+            }
+          })
+        } else {
+          this.ServicioClienteHttp.Actualizar(this.pk_identificador, objeto).subscribe({
+            next: (data) => {
+              if (data.success) {
+                this.alertas.MensajeExito(this.pagina);
+              } else {
+                this.alertas.MensajeError(data.message);
+              }
+            },
+            error: (err) => {
+              console.log(err.message)
+            }
+          })
+        }
+
+      }
+    });
+  }
+
+  AbrirPickerFecAsi(): void {
+    this.picker_fec_asi.open();
+  }
+  
+  AbrirPickerFecAprob():void{
+    this.picker_fec_apr.open();
+  }
+  
+/*  CargarSelectEstructura()
+  {
+    this.ServicioClienteHttp.SeteoRuta("CuentasContables?pag=1&reg=5");
+    
+    this.ServicioClienteHttp.Obtener_Lista().subscribe({
+      next: (data) => {
+        if (data.success) {
+          this.OptionsEstructura = data.result;
+          this.CargarAutocomplete();
+        }
+        else {
+          this.alertas.MensajeError(data.message);
+        }
+
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }
+*/
+  /**
+ * Funcion que carga los valores iniciales del autocoomplete
+ */
+ /* CargarAutocomplete(){
+    this.ban_CargaEstructura = 1;      
+    this.OpcionesCuentaDebito = this.OptionsEstructura.slice();  
+  }*/
+   /**
+   * Funcion que llama a un filtro de informacion para los campos autocomplete
+   * @param opcion 
+   */
+  
+   FiltroAutocomplete(opcion: string) {
+    var filterValue = '';
+
+    switch (opcion) {
+      
+      case "partida_des":
+        filterValue = this.partida_desc.nativeElement.value.toLowerCase();
+        this.OpcionesPartidas = 
+        this.EstructuraPartidas.filter(
+          option=>
+            {
+              const textMatch=option.out_nom_cu.toLowerCase().includes(filterValue);
+              return textMatch;
+           }
+       );
+       this.FormularioDatos.patchValue({
+         partida: this.OpcionesPartidas[0].out_cue.toString(),
+       });
+       break;
+
+
+      case "departam_desc": 
+      filterValue = this.departam_desc.nativeElement.value.toLowerCase();
+      this.OpcionesDepartamentos = 
+      this.EstructuraDepartamentos.filter(
+        option => 
+          {
+             const textMatch = option.descrip.toLowerCase().includes(filterValue);
+             return textMatch;
+          }
+      );
+      this.FormularioDatos.patchValue({
+        departam: this.OpcionesDepartamentos[0].codigo.toString(),
+      });
+      break;
+      case "responsable_desc":
+      filterValue = this.responsable_desc.nativeElement.value.toLowerCase();
+      this.OpcionesResponsables = 
+      this.EstructuraResponsables.filter(
+        option => 
+          {
+            const textMatch = option.descrip.toLowerCase().includes(filterValue);
+            return textMatch;
+          }
+      );
+      this.FormularioDatos.patchValue({
+        solicita: this.OpcionesResponsables[0].codigo.toString(),
+      });
+      break;
+        
+
+    }
+  }
+
+ 
+  /**
+   * Funcion para cargar el filtro de informacion a partir de la estructura de las partidas de gastos
+   * @param filterValue 
+   * @returns 
+   */
+ /* CargarDatosFiltrados(filterValue:string | null){
+    return this.OptionsEstructura.filter(
+      option => 
+        {
+          option.cuenta.toLowerCase().includes(filterValue)
+          const valueMatch = option.cuenta.toLowerCase().includes(filterValue);
+          const textMatch = option.nom_cue.toLowerCase().includes(filterValue);
+          return valueMatch || textMatch;
+        }
+    );
+  }*/
+
+  /**
+   * Carga informacion de departamento
+   */
+  CargarDatosDepartamento(rutaA:string)
+  {
+    let opcion:string;
+    if (rutaA.indexOf("/") >0){
+    let arrayResultado = rutaA.split('/');
+     opcion=arrayResultado[2];
+  }
+  else{
+    opcion='0';
+  }
+    this.ServicioClienteHttp.SeteoRuta(rutaA);
+    this.ServicioClienteHttp.Obtener_Lista().subscribe({
+      next: (data) => {
+        if (data.success) {
+        switch (opcion) {
+          case '19':
+            this.EstructuraDepartamentos= data.result;
+            this.OpcionesDepartamentos = this.EstructuraDepartamentos.slice();
+            break;
+            case '54':
+              this.EstructuraResponsables= data.result;
+              this.OpcionesResponsables = this.EstructuraResponsables.slice();
+            break;
+            case '0':
+              this.EstructuraPartidas= data.result;
+              this.OpcionesPartidas = this.EstructuraPartidas.slice();
+            break;
+            default:
+              break;
+        }
+          
+        }
+        else {
+          this.alertas.MensajeError(data.message);
+        }
+
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }
+
+   /**
+  * Funcion que genera la lista de datos para los grids de las pantallas
+  */
+   CargarGrid():void {
+      if (this.evento == "EDITAR") {
+      this.ServicioClienteHttp.SeteoRuta(this.rutaapi + "/CertificacionesDetalle");
+      this.ServicioClienteHttp.Obtener_x_Codigo(this.pk_identificador).subscribe({
+        next: (data) => {
+          
+          if (data.success) {
+            this.resultado = JSON.parse(data.result);
+          }
+          this.dataSource = new MatTableDataSource(this.resultado);
+          this.dataSource.sort = this.sort;
+          
+        },
+        error: (err) => {
+          console.log(err.message)
+        }
+      })
+    }
+  }
+
+ // CargarDepartamento(out_cre_por)
+/*  CargarDepartamento(out_cre_por:string){
+    this.ServicioClienteHttp.SeteoRuta("TablasGenerales/DetalleSinDiccionario/"+out_cre_por);
+    this.ServicioClienteHttp.Obtener_x_Codigo(this.pk_identificador).subscribe({
+      next: (data) => {
+        
+        if (data.success) {
+          this.resultado = JSON.parse(data.result);
+        }
+        this.dataSource = new MatTableDataSource(this.resultado);
+        this.dataSource.sort = this.sort;
+        
+      },
+      error: (err) => {
+        console.log(err.message)
+      }
+    })
+  }*/
+}
+--------------------------
+<section class="content">
+    <div class="content-block">
+        <div class="block-header">
+            <!-- Cabecera guia de página -->
+            <app-breadcrumb 
+                [title]="'MOVIMIENTOS PRESUPUESTARIOS'" 
+                [items]="['Parametrización']"
+                [active_item]="'Movimientos Presupuestarios'">
+            </app-breadcrumb>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="materialTableHeader">
+                        <div class="modalHeader clearfix">
+                            <div class="modal-about">
+                                {{accion}}
+                            </div>
+                        </div>
+                        <div class="right">
+                            <ul class="tbl-export-btn">
+                                <li class="tbl-header-btn">
+                                    <div class="m-l-10" matTooltip="VOLVER">
+                                        <button mat-mini-fab color="warn"
+                                            (click)="this.alertas.PaginaNavegar(this.pagina)">
+                                            <mat-icon class="col-white">arrow_back</mat-icon>
+                                        </button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <form class="register-form m-4" [formGroup]="FormularioDatos">
+                        <div class="row">
+                            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Documento</mat-label>
+                                    <input matInput formControlName="siglasnum">
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('required')) {
+                                    <mat-error>
+                                        La Sigla es requerida
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('pattern')) {
+                                    <mat-error>
+                                        La Sigla debe contener unicamente letras
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('maxlength')) {
+                                    <mat-error>
+                                        La Sigla debe tener maximo dos letras
+                                    </mat-error>
+                                    }
+                                </mat-form-field>
+
+                            </div>
+                            <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline">
+                                    <mat-label>Fecha As.</mat-label>
+                                    <input matInput [matDatepicker]="picker_fec_asi"  formControlName="fec_asi" (click)="AbrirPickerFecAsi()" >
+                                      <mat-datepicker-toggle matSuffix [for]="picker_fec_asi"></mat-datepicker-toggle>
+                                      <mat-datepicker #picker_fec_asi></mat-datepicker>
+                                      @if (FormularioDatos.get('fec_asi')?.hasError('pattern')) {
+                                        <mat-error>
+                                           La Fecha de Aprobacion tiene errores de ingreso
+                                        </mat-error>
+                                        }
+                                    </mat-form-field>
+                        </div>
+                        <div class="col-xl-2 col-lg2 col-md-6 col-sm-6 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline">
+                                    <mat-label>Aprobado</mat-label>
+                                    <input matInput [matDatepicker]="picker_fec_apr"  formControlName="fec_apr" (click)="AbrirPickerFecAprob()" >
+                                      <mat-datepicker-toggle matSuffix [for]="picker_fec_apr"></mat-datepicker-toggle>
+                                      <mat-datepicker #picker_fec_apr></mat-datepicker>
+                                      @if (FormularioDatos.get('fec_apr')?.hasError('pattern')) {
+                                        <mat-error>
+                                           La Fecha de Aprobacion tiene errores de ingreso
+                                        </mat-error>
+                                        }
+                                    </mat-form-field>
+                        </div>
+                            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Estado</mat-label>
+                                    <mat-select formControlName="codigo_est">
+                                        <mat-option [value]="1">
+                                            DIGITADO
+                                        </mat-option>
+                                        <mat-option [value]="2">
+                                          CUADRADO
+                                        </mat-option>
+                                        <mat-option [value]="3">
+                                          APROBADO
+                                        </mat-option>
+                                        <mat-option [value]="4">
+                                          CERRADO
+                                        </mat-option>
+                                      </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row">                           
+                            
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+
+                                    <mat-label>Comprobante</mat-label>
+                                    <input matInput formControlName="num_com">
+
+                                </mat-form-field>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Departamento</mat-label>
+                                    <input matInput formControlName="departam_desc" [matAutocomplete]="auto1"
+                                        type="text" placeholder="Selecciona un registro"
+                                        (input)="FiltroAutocomplete('departam_desc')"
+                                        (focus)="FiltroAutocomplete('departam_desc')" #departam_desc>
+                                    <mat-autocomplete #auto1="matAutocomplete" requireSelection>
+                                        @for (valores of OpcionesDepartamentos; track valores) {
+                                        <mat-option [value]="valores.descrip">
+                                            <small>{{valores.descrip}}</small> </mat-option>
+                                        }
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Descripción</mat-label>
+                                    <input matInput formControlName="des_cab">
+                                    @if (FormularioDatos.get('des_cab')?.hasError('required')) {
+                                    <mat-error>
+                                        La descripcion es requerida
+                                    </mat-error>
+                                    }  
+                                </mat-form-field>   
+                            </div>  
+                            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Responsable</mat-label>
+                                    <input matInput formControlName="responsable_desc" [matAutocomplete]="auto2"
+                                        type="text" placeholder="Selecciona un registro"
+                                        (input)="FiltroAutocomplete('responsable_desc')"
+                                        (focus)="FiltroAutocomplete('responsable_desc')" #responsable_desc>
+                                    <mat-autocomplete #auto2="matAutocomplete" requireSelection>
+                                        @for (valores of OpcionesResponsables; track valores) {
+                                        <mat-option [value]="valores.descrip">
+                                            <small>{{valores.descrip}}</small>
+                                        </mat-option>
+                                        }
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>                                                 
+                        </div>                   
+                        <div class="row">
+                            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Cod. Proceso</mat-label>
+                                    <input matInput formControlName="num_com">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Valor Contrato</mat-label>
+                                    <input matInput formControlName="tot_cre">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Creado Por:</mat-label>
+                                    <input matInput formControlName="out_cre_por_desc">
+                                   <!-- @if (FormularioDatos.get('siglasnum')?.hasError('required')) {
+                                    <mat-error>
+                                        La Sigla es requerida
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('pattern')) {
+                                    <mat-error>
+                                        La Sigla debe contener unicamente letras
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('maxlength')) {
+                                    <mat-error>
+                                        La Sigla debe tener maximo dos letras
+                                    </mat-error>
+                                    }-->
+                                </mat-form-field>
+
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Modificado Por:</mat-label>
+                                    <input matInput formControlName="out_mod_por_desc">
+                                   <!-- @if (FormularioDatos.get('siglasnum')?.hasError('required')) {
+                                    <mat-error>
+                                        La Sigla es requerida
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('pattern')) {
+                                    <mat-error>
+                                        La Sigla debe contener unicamente letras
+                                    </mat-error>
+                                    }
+                                    @if (FormularioDatos.get('siglasnum')?.hasError('maxlength')) {
+                                    <mat-error>
+                                        La Sigla debe tener maximo dos letras
+                                    </mat-error>
+                                    }-->
+                                </mat-form-field>
+
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                subscriptSizing="dynamic" >
+                                    <mat-label>Partida:</mat-label>
+                                    <input matInput
+                                    formControlName="partida_desc"
+                                    [matAutocomplete]="auto3"
+                                    type="text"
+                                    placeholder="Selecciona un registro"
+                                    (input)="FiltroAutocomplete('partida_desc')" 
+                                    (focus)="FiltroAutocomplete('partida_desc')"  #partida_desc>
+                                    
+                                    <mat-autocomplete #auto3="matAutocomplete" requireSelection >
+                                        @for (valores of OpcionesPartidas; track valores) {
+                                            <mat-option [value]="valores.out_nom_cu">
+                                              <small>{{valores.out_cuenta}}</small> ||
+                                              <small>{{valores.out_nom_cu}}</small>
+                                            </mat-option>
+                                          }
+                                    </mat-autocomplete>
+                                  </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row">                         
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4">
+                                <mat-form-field class="example-full-width" appearance="outline"
+                                    subscriptSizing="dynamic">
+                                    <mat-label>Devengado?Utilizado? Monto</mat-label>
+                                    <input matInput formControlName="tot_deb">
+                                </mat-form-field>
+                            </div>                  
+                        </div> 
+                        <input formControlName="departam">
+                        <input formControlName="solicita">                                
+                    </form>
+                    <div class="responsive_table">
+                        <table mat-table [dataSource]="dataSource" matSort class="mat-cell advance-table" style="border: 1px;">
+                            <!-- Item Column -->
+                            <ng-container matColumnDef="cuenta">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>PARTIDA</mat-header-cell>
+                                <mat-cell *matCellDef="let row" >{{row.cuenta}}</mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
+                        
+                            <!-- Cost Column -->
+                            <ng-container matColumnDef="nom_cue">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>DESCRIPCION</mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.nom_cue}}</mat-cell>
+                                <mat-footer-cell *matFooterCellDef> TOTAL </mat-footer-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="val_cre">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>CERTIFICADO</mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.val_cre | currency}}</mat-cell>
+                               <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="val_deb">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>UTILIZADO</mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.val_deb | currency}}</mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
+
+                            
+                            <ng-container matColumnDef="val_sal">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>SALDO</mat-header-cell>
+                                <mat-cell *matCellDef="let row" >{{row.val_sal | currency}}</mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="val_dist">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>DIST</mat-header-cell>
+                                <mat-cell *matCellDef="let row" >{{row.val_dist | currency}}</mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
+                        
+                            <mat-header-row *matHeaderRowDef="displayedColumns" style="background-color: #D7E3FF;"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'"></mat-row>
+                            <mat-footer-row *matFooterRowDef="displayedColumns;" style="background-color: #D7E3FF; font-weight: bold;"></mat-footer-row>
+                        
+                            <!-- Fila que se despliega cuando no hay informacion. -->
+
+                            <tr class="mat-row" *matNoDataRow >
+                                <td class="mat-cell" colspan="3">No existen datos para mostrar 
+                                </td>
+                            </tr>
+
+                            
+                        
+                        </table>
+
+                        
+                    </div>
+                    
+                    <div class="row row-save">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4 text-end">
+                            <button mat-raised-button color="primary" [mat-dialog-close]="1"
+                                [disabled]="!FormularioDatos.valid" (click)="GuardarInformacion()">Guardar</button>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4 text-start">
+                            <button mat-flat-button color="warn" (click)="this.alertas.PaginaNavegar(this.pagina)"
+                                style="margin-left: 8px;">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</section>

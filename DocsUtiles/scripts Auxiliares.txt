@@ -1,0 +1,511 @@
+--Creacion de funcion--Funciono
+ -- drop function "public"."empresa"("emp" bpchar)
+  CREATE OR REPLACE FUNCTION "public"."empresa"("emp" bpchar)
+  RETURNS SETOF record
+ AS $BODY$     
+  DECLARE        
+  sql_result record;      
+  sql text;       
+  sqlSuma text;   BEGIN         sql = '   
+  select cast(nom_emp as character(100)) as nom_emp, cast(dir_emp  as character(100))
+  as dir_emp
+   from coempre';               
+   FOR sql_result in EXECUTE sql LOOP        
+   RETURN NEXT sql_result;        
+   END LOOP;        
+   --drop table empresa_tmp;
+   END;
+   --$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000
+  
+  
+  select * from empresa('0004') as datos(nom_emp character(100),dir_emp character(100))
+  
+  -------------buscar por un texto en la funcion
+  select proname,prosrc from pg_proc where prosrc like '%insert%';
+  ----------------------------- insert%call  spi_empresa(
+	'prueba2', '0006')
+CREATE or replace procedure spi_empresa(
+	nom_emp character, cod_emp character)
+
+    LANGUAGE 'plpgsql'
+AS $BODY$
+   
+   begin
+    INSERT INTO public.coempre(codemp, nom_emp, ruc_emp, dir_emp, tel1_emp)
+	VALUES (cod_emp,nom_emp, '1719235432001', 'prueba', '133123');
+  
+    end;
+    
+$BODY$;
+call spi_empresa('prueba3','007')
+
+select * from public.coempre
+----------------------------
+--funcion que vale
+CREATE OR REPLACE function public.fsps_rempresa(v_cod_emp character)   
+RETURNS SETOF "pg_catalog"."record" AS $BODY$    
+DECLARE        
+sql_result record;      
+sql text;        
+
+BEGIN         
+sql = '    select cast(nom_emp as character(100)) as nom_emp, cast(dir_emp  as character(100)) as 
+nom_emp   from coempre where codemp like '''||v_cod_emp||'%''';               
+   FOR sql_result in 
+   EXECUTE sql LOOP        
+   RETURN NEXT sql_result;        
+   END LOOP;        --drop table empresa_tmp; 
+   END;
+   $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000
+
+select * from coempre
+  select * from public.fsps_rempresa(
+	 '0005')as datos(nom_emp character(100), dir_emp character(100))
+----------------------------------------	 
+	 git config --global user.email "normyarcos@gmail.com"
+git config --global user.name "normy1984"
+     
+	 -----------------------------
+	 -- PROCEDURE: public.sps_empresa(character, integer)
+
+-- DROP PROCEDURE IF EXISTS public.sps_empresa(character, integer);
+
+CREATE OR REPLACE PROCEDURE public.sps_empresa(
+	IN emp character,
+	IN anio_bus integer)
+LANGUAGE 'plpgsql'
+AS $BODY$
+     
+   DECLARE        sql_result record;     
+  sql text;        sqlSuma text;   
+  BEGIN         sql = '    select cast(nom_emp as character(100)) as nom_emp, 
+  cast(dir_emp  as character(100)) as nom_emp
+   from coempre';              
+   FOR sql_result in EXECUTE sql LOOP               
+   END LOOP;        --drop table empresa_tmp; 
+   END;
+   
+$BODY$;
+ALTER PROCEDURE public.sps_empresa(character, integer)
+    OWNER TO postgres;
+    
+call     public.sps_empresa(
+	'0005',
+	4)
+    
+    ------
+    drop view vis_empresa
+    create or replace view vis_empresa as
+    select codemp,nom_emp , 
+ dir_emp  from coempre
+    
+select * from vis_empresa where codemp='0004'
+select * from vis_empresa where codemp='0004'
+
+
+create or replace view vis_empresa(v_codemp) as
+    select codemp,nom_emp , 
+ dir_emp  from coempre where codemp =@v_codemp  
+ 
+ -------------------------------------
+ ﻿using Congope.Empresas.Data;
+using Congope.Empresas.Models;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Npgsql;
+using System.Data;
+using System.Runtime.Serialization;
+using System.Security.Cryptography;
+
+
+namespace Congope.Empresas.BussinessLogic
+{
+    public class EmpresaData
+    {
+
+        public static bool Registrar(Empresa emp)
+        {
+            using (NpgsqlConnection oConexion = new NpgsqlConnection(Conexion.cadena))
+            {
+                NpgsqlCommand cmd = new NpgsqlCommand("spi_empresa", oConexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@nom_emp", emp.nom_emp);
+                cmd.Parameters.AddWithValue("@cod_emp", emp.codemp);
+
+                try
+                {
+                    oConexion.Open();
+                    cmd.ExecuteNonQuery();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    return false;
+                    throw e;
+                }
+            }
+        }
+
+ 
+
+        public static List<Empresa> Listar()
+        {
+
+            List<Empresa> oListaEmpresas = new List<Empresa>();
+            using (NpgsqlConnection oConexion = new NpgsqlConnection(Conexion.cadena))
+            {
+                //NpgsqlCommand cmd = new NpgsqlCommand("sps_empresa", oConexion);
+                NpgsqlCommand cmd = new NpgsqlCommand();
+                // cmd.CommandText = "  select * from empresa('0004') as datos(nom_emp character(100),dir_emp character(100))";
+                //cmd.CommandType = CommandType..StoredProcedure;
+                cmd.CommandText = "select * from vis_empresa";
+                //cmd.Parameters.AddWithValue("@emp",Convert.ToString( "0004"));
+                //  cmd.Parameters.AddWithValue("@dir_emp", Convert.ToString("prueba"));
+                cmd.Connection = oConexion;
+                try
+                {
+                    oConexion.Open();
+                    cmd.ExecuteNonQuery();
+
+                    using (NpgsqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            oListaEmpresas.Add(new Empresa()
+                            {
+                                codemp = dr[0].ToString(),
+                                nom_emp = dr[1].ToString(),
+                                //        // ruc_emp = dr[1].ToString(),
+                                dir_emp = dr[2].ToString(),
+                                //        //    //tel1_emp = dr["tel1_emp"].ToString(),
+                            });
+                        }                   
+                    }
+
+                    return oListaEmpresas;
+                }
+                catch (Exception e)
+                {
+
+                    throw e;
+                    return oListaEmpresas;
+                }
+
+            }
+
+        }
+
+
+        //public static Empresa Obtener(string codemp)
+        //{
+        //   // string parametro = "0006";
+        //    //List<Empresa> oListaEmpresas = new List<Empresa>();
+        //    Empresa oEmpresa=new Empresa();
+        //    using (NpgsqlConnection oConexion = new NpgsqlConnection(Conexion.cadena))
+        //    {
+        //        //NpgsqlCommand cmd = new NpgsqlCommand("sps_empresa", oConexion);             
+        //        // cmd.CommandText = "  select * from empresa('0004') as datos(nom_emp character(100),dir_emp character(100))";
+        //        //cmd.CommandType = CommandType..StoredProcedure;
+        //        string sql = "select * from coempre  where codemp = '" + codemp + "'";// --where codemp = '0004'
+        //  //      NpgsqlCommand cmd = new NpgsqlCommand(sql, oConexion);
+        //        //cmd.Parameters.AddWithValue("@parametro", parametro);
+        //                                                      //cmd.Parameters.AddWithValue("@dir_emp", Convert.ToString("0005"));
+        //       // cmd.Connection = oConexion;
+        //        try
+        //        {
+
+        //            oConexion.Open();
+        //            //cmd.ExecuteNonQuery();
+        //            using (NpgsqlCommand cmd = new NpgsqlCommand(sql, oConexion))
+        //            {
+        //                //using (NpgsqlDataReader dr = cmd.ExecuteReader())
+        //                //{
+        //                NpgsqlDataReader dr = cmd.ExecuteReader();
+        //                //if (dr.HasRows)
+        //                //{
+        //                //    try
+        //                //    {
+        //                //        while (dr.Read())
+        //                //        {
+        //                //            oEmpresa = new Empresa()
+        //                //            {
+        //                //                codemp = dr[0].ToString(),
+        //                //                nom_emp = dr[1].ToString(),
+        //                //                //        // ruc_emp = dr[1].ToString(),
+        //                //                dir_emp = dr[2].ToString(),
+        //                //                //        //    //tel1_emp = dr["tel1_emp"].ToString(),
+        //                //            };
+        //                //        }
+        //                //    }
+        //                //    catch (Exception ex)
+        //                //    {
+        //                //        Console.WriteLine($"Error al leer los datos: {ex.Message}");
+        //                //    }
+        //                //}
+        //                //else
+        //                //{
+        //                //    Console.WriteLine("No hay filas disponibles para leer.");
+        //                //}
+        //                //  }
+        //                while (dr.Read()){
+        //                    oEmpresa = new Empresa()
+        //                    {
+        //                        codemp = dr[0].ToString(),
+        //                        nom_emp = dr[1].ToString(),
+        //                        //        // ruc_emp = dr[1].ToString(),
+        //                        dir_emp = dr[2].ToString(),
+        //                        //        //    //tel1_emp = dr["tel1_emp"].ToString(),
+        //                    };
+        //                    Console.WriteLine($"Nombre: {dr[0]}, Salario Aumentado: {dr[1]}");
+        //                }
+
+        //            }
+
+        //            return oEmpresa;
+        //        }
+        //        catch (Exception e)
+        //        {
+
+        //            throw e;
+        //            return oEmpresa;
+        //        }
+
+        //    }
+
+        //}
+
+        /// <summary>
+        /// esto es para la vista
+        /// </summary>
+        /// <param name="codemp"></param>
+        /// <returns></returns>
+        public static Empresa Obtener(string codemp)
+        {
+           
+            Empresa oEmpresa = new Empresa();
+            using (NpgsqlConnection oConexion = new NpgsqlConnection(Conexion.cadena))
+            {
+            
+                string sql = "select * from vis_empresa  where codemp = '" + codemp + "'";// --where codemp = '0004'
+                                                                                           //      NpgsqlCommand cmd = new NpgsqlCommand(sql, oConexion);
+                                                                                           //cmd.Parameters.AddWithValue("@parametro", parametro);
+                                                                                           //cmd.Parameters.AddWithValue("@dir_emp", Convert.ToString("0005"));
+                                                                                           // cmd.Connection = oConexion;
+                try
+                {
+
+                    oConexion.Open();
+                    //cmd.ExecuteNonQuery();
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(sql, oConexion))
+                    {
+                        //using (NpgsqlDataReader dr = cmd.ExecuteReader())
+                        //{
+                        NpgsqlDataReader dr = cmd.ExecuteReader();
+                      
+                        while (dr.Read())
+                        {
+                            oEmpresa = new Empresa()
+                            {
+                                codemp = dr[0].ToString(),
+                                nom_emp = dr[1].ToString(),
+                                //        // ruc_emp = dr[1].ToString(),
+                                dir_emp = dr[2].ToString(),
+                                //        //    //tel1_emp = dr["tel1_emp"].ToString(),
+                            };
+                            Console.WriteLine($"Nombre: {dr[0]}, Salario Aumentado: {dr[1]}");
+                        }
+
+                    }
+
+                    return oEmpresa;
+                }
+                catch (Exception e)
+                {
+
+                    throw e;
+                    return oEmpresa;
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// Modica una empresa
+        /// </summary>
+        /// <param name="emp"> Datos de la empresa</param>
+        /// <returns>bool  si se realizo la modificacion</returns>
+        public static bool Modificar(Empresa emp)
+        {
+        
+            using (NpgsqlConnection oConexion = new NpgsqlConnection(Conexion.cadena))
+            {
+                NpgsqlCommand cmd = new NpgsqlCommand("spu_empresa", oConexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@varcodemp", emp.codemp);
+                cmd.Parameters.AddWithValue("@varnomemp", emp.nom_emp);
+                try
+                {
+                    oConexion.Open();
+                    cmd.ExecuteNonQuery();
+                    return true;
+                }
+                catch (Exception e)
+                {
+
+                    throw e;
+                    return false;
+                }
+            }
+        }
+
+        public static bool Eliminar(int id)
+        {
+            using (NpgsqlConnection oConexion = new NpgsqlConnection(Conexion.cadena))
+            {
+                NpgsqlCommand cmd = new NpgsqlCommand("spd_eliminar", oConexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@codemp", id);
+                try
+                {
+                    oConexion.Open();
+                    cmd.ExecuteNonQuery();
+                    return true;
+                }
+                catch (Exception e)
+                {
+
+                    throw e;
+                    return false;
+                }
+
+            }       
+        }
+    }
+    
+}
+.-----------------------------
+﻿using Congope.Empresas.BussinessLogic;
+using Congope.Empresas.Models;
+using Microsoft.AspNetCore.Mvc;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace Congope.Empresas.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class EmpresaController : ControllerBase
+    {
+        // GET: api/<ValuesController>
+        [HttpGet]
+        public List<Empresa> Get()
+        {
+            return EmpresaData.Listar();
+        }
+
+        // GET api/<ValuesController>/5
+        [HttpGet("{id}")]
+        public Empresa Get(string id)
+        {
+            return EmpresaData.Obtener(id); 
+        }
+
+
+        //// GET api/<ValuesController>/6
+        ////[HttpGet("{id}")]
+        //public Empresa GetVista(string id)
+        //{
+        //    return EmpresaData.ObtenerVista(id);
+        //}
+
+        // POST api/<ValuesController>
+        [HttpPost]
+        public bool Post([FromBody] Empresa oEmpresa)
+        {
+            return EmpresaData.Registrar(oEmpresa);
+        }
+
+        // PUT api/<ValuesController>/5
+        //[HttpPut("{id}")]
+        //public void Put(Empresa emp, [FromBody] string value)
+        //{
+        //    return EmpresaData.Modificar(emp);
+        //}
+
+       // PUT api/<ValuesController>/5
+        [HttpPut("{emp}")]
+        public bool Put( [FromBody] Empresa emp)
+        {
+            return EmpresaData.Modificar(emp);
+        }
+
+        // DELETE api/<ValuesController>/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+        }
+    }
+}
+----------------------------------
+DROP function if EXISTS public.sps_estructura_control(in_codemp character varying) ;
+do $$
+begin
+RAISE NOTICE 'Se elimino la función sps_estructura_control ';
+end $$;
+CREATE OR REPLACE FUNCTION public.sps_estructura_control(in_codemp character varying, OUT out_id integer, OUT descripcion character varying, OUT longitud integer, OUT item integer,out digitos integer)
+ RETURNS SETOF record
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    reg RECORD;
+    aniofiscal integer;
+    niveles int;
+	longitudniv int;
+    suma int;
+begin
+	aniofiscal=(select max(coejefis.anio) from coejefis);
+	
+DROP TABLE IF EXISTS total_digitos;
+CREATE TEMP TABLE total_digitos AS (
+SELECT inestcta.niv_est AS anio,
+    inestcta.des_est,
+    inestcta.lon_est,
+    inestcta.item_aso
+   FROM inestcta where inestcta.anio = aniofiscal and inestcta.codemp=in_codemp
+ 
+);
+
+	niveles=(select sum (lon_est ) from total_digitos) ;
+	longitudniv= (select max(anio)  from total_digitos);
+	suma= niveles +longitudniv;
+
+    FOR REG IN SELECT inestcta.niv_est AS anio,
+    inestcta.des_est,
+    inestcta.lon_est,
+    inestcta.item_aso,suma
+   FROM inestcta where inestcta.anio = aniofiscal and inestcta.codemp=in_codemp
+   order by niv_est
+ loop
+	 out_id  := reg.anio;
+	 descripcion:=reg.des_est;
+	 longitud     := reg.lon_est;
+	 item     := reg.item_aso;
+      digitos:=reg.suma;
+       RETURN NEXT;
+    END LOOP;
+    RETURN;
+END
+$function$
+;
+do $$
+begin
+RAISE NOTICE 'Se creó exitosamente la función sps_estructura_control';
+end $$;
+select public.prueba('0004')
+select public.sps_estructura_control('0004')

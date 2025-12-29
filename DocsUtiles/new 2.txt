@@ -1,0 +1,225 @@
+-- FUNCTION: public.est_sit_fin(character, character, integer, character, character, character, integer)
+
+-- DROP FUNCTION IF EXISTS public.est_sit_fin(character, character, integer, character, character, character, integer);
+
+CREATE OR REPLACE FUNCTION public.est_sit_fin(
+	emp character,
+	f_hasta character,
+	antescierre integer,
+	cuentasbusca character,
+	cuentanorepre character,
+	nnivelbus character,
+	ultniv integer)
+    RETURNS SETOF record 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+     
+DECLARE     
+   sql_result record;   
+   sql text;      
+   nAnio int;  
+   nAnioAnt int;    
+   nMes int;    
+   nDia int;    
+   f_hastaAnt text;  
+   sAndCtaNoRepre text;  
+   sAndCuenta text;  
+   sNoCtas911 text;  
+   nDetalleCta text;  
+   nNoRepre911 int;  
+BEGIN     
+   nAnio = date_part('year', date(f_hasta));  
+   nMes = date_part('month', date(f_hasta));  
+   nDia = date_part('day', date(f_hasta));  
+     
+   nAnioAnt = nAnio - 1;  
+   f_hastaAnt = nAnioAnt||'-'||lpad(cast(nMes as character(2)),2,'0')||'-'||lpad(cast(nDia as character(2)),2,'0');  
+     
+   sAndCtaNoRepre = '';  
+   if cuentanorepre <> '' then  
+       sAndCtaNoRepre = ' and cuenta <> '''||cuentanorepre||'''';  
+       If (ultniv = 1) Then 
+           sAndCtaNoRepre = sAndCtaNoRepre ||' and cuenta not in (select cuenta from coplacta where cuenta like '''||cuentanorepre||'%'' group by 1) ';  
+       end if;  
+   end if;  
+     
+   sAndCuenta = ' and cuenta like '''||cuentasbusca||'%'' ';  
+     
+   nNoRepre911 = (select cast(case when telefon1 = '' or telefon1 is null then '0' else telefon1 end as numeric(1)) from tablas where codemp = emp and codtab = 15 and codigo = 26);  
+   sNoCtas911 = '';  
+   if (nNoRepre911 = 1) then  
+       if(replace(cuentasbusca,'.','') = '911') then  
+           sNoCtas911 = ' and replace(cuenta,''.'','''') not in(''91111'', ''91113'', ''91117'') ';  
+       end if;  
+    
+       if(replace(cuentasbusca,'.','') = '921') then  
+           sNoCtas911 = ' and replace(cuenta,''.'','''') not in(''92111'', ''92113'', ''92117'') ';  
+       end if;  
+   end if;  
+    
+    nDetalleCta = ''; 
+     If (ultniv = 1) Then 
+            nDetalleCta = ' or ult_cue = ''S'' '; 
+     end if; 
+    
+   sql = 'CREATE TEMP TABLE estado_act as    
+   select cuenta,   
+   nom_cue,   
+   case when substring(cuenta,1,1) = ''1'' or substring(cuenta,1,3) = ''6.3'' then fin_deb - fin_cre else fin_cre - fin_deb end as saldo, niv_cue  
+   from esf_act_tmp   
+   Where (niv_cue = '||nNivelBus||nDetalleCta||') '||  
+   sAndCtaNoRepre||   
+   sNoCtas911||   
+   sAndCuenta;  
+     
+   EXECUTE sql;  
+     
+   sql = 'CREATE TEMP TABLE estado_ant as    
+   select cuenta,   
+   nom_cue,   
+   case when substring(cuenta,1,1) = ''1'' or substring(cuenta,1,3) = ''6.3'' then fin_deb - fin_cre else fin_cre - fin_deb end as saldo, niv_cue  
+   from esf_ant_tmp 
+   Where (niv_cue = '||nNivelBus||nDetalleCta||') '|| 
+   sAndCtaNoRepre||  
+   sNoCtas911||   
+   sAndCuenta;  
+     
+   EXECUTE sql;  
+     
+   sql = 'select 
+   cast(case when a.cuenta is null then b.cuenta else a.cuenta end as character varying) as cuenta,   
+   cast(case when a.nom_cue is null then b.nom_cue else a.nom_cue end as character varying) as nom_cue,   
+   cast(sum(case when a.saldo is null then 0 else a.saldo end) as double precision) as valor_act,   
+   cast(sum(case when b.saldo is null then 0 else b.saldo end) as double precision) as valor_ant,  
+   cast(max(case when a.niv_cue is null then b.niv_cue else a.niv_cue end) as numeric(2)) as niv_cue  
+   from estado_act a  
+   full join estado_ant b on a.cuenta = b.cuenta  
+   group by 1, 2  
+   order by 1';     
+     
+   FOR sql_result in EXECUTE sql LOOP     
+   RETURN NEXT sql_result;     
+   END LOOP;     
+       
+   drop table estado_act;     
+   drop table estado_ant;     
+END;
+$BODY$;
+
+ALTER FUNCTION public.est_sit_fin(character, character, integer, character, character, character, integer)
+    OWNER TO postgres;
+
+
+create type coempre_type as (
+    nom_emp character(100), dir_emp  character(100)
+)
+--funcion que vale
+CREATE OR REPLACE function public.fsps_empresa()  
+returns setof coempre_type
+AS $BODY$    
+DECLARE 
+valida integer
+cursor_tablas cursor is
+sql_result record;      
+sql text;        
+
+select * from coempre;
+BEGIN         
+    open cursor_tablas     
+      fetch  cursor_tablas into sql_result;
+      while found loop
+      begin
+      exception when others then
+      raise notice '% %',sqlerrm,sqlstate
+      end
+      fetch cursor_tablas;
+      END LOOP;        --drop table empresa_tmp; 
+    close cursor_tablas;
+    return;
+  END;
+   $BODY$
+  LANGUAGE plpgsql 
+----------------------------
+select * from coempre
+--drop function f1sps_rempresa(v_cod_emp character)  
+CREATE procedure public.f1sps_rempresa(v_cod_emp character)   
+--returns setof coempre_type 
+AS $BODY$    
+DECLARE        
+sql_result record;      
+sql text;        
+
+BEGIN         
+sql = '    select cast(nom_emp as character(100)) as nom_emp, cast(dir_emp  as character(100)) as 
+nom_emp   from coempre where codemp like '''||v_cod_emp||'%''';               
+   FOR sql_result in 
+   EXECUTE sql LOOP        
+   --RETURN NEXT sql_result;        
+   END LOOP;        --drop table empresa_tmp; 
+   END;
+   $BODY$
+  LANGUAGE plpgsql  
+  
+  select * from public.f1sps_rempresa('0005')
+  
+call  public.f1sps_rempresa('0005')  
+
+--funcion que vale
+CREATE OR REPLACE procedure public.sps_rempresa(v_cod_emp character)    
+AS $BODY$    
+DECLARE        
+sql_result record;      
+sql text;        
+
+BEGIN         
+sql = '    select cast(nom_emp as character(100)) as nom_emp, cast(dir_emp  as character(100)) as 
+nom_emp   from coempre where codemp like '''||v_cod_emp||'%''';               
+   FOR sql_result in 
+   EXECUTE sql LOOP        
+       
+   END LOOP;        --drop table empresa_tmp; 
+   END;
+   $BODY$
+  LANGUAGE plpgsql 
+
+call sps_rempresa('0005') 
+
+
+------------------------------------
+--funcion que vale
+CREATE OR REPLACE procedure public.sps_rempresa(v_cod_emp character)    
+RETURNS prueba AS $BODY$    
+DECLARE        
+sql_result record;      
+sql text;        
+
+BEGIN         
+sql = 'for sql_result in select cast(nom_emp as character(100)) as nom_emp, cast(dir_emp  as character(100)) as 
+nom_emp   from coempre where codemp like '''||v_cod_emp||'%''';               
+   FOR sql_result in 
+   EXECUTE sql LOOP        
+    return next sql_result
+   END LOOP;        --drop table empresa_tmp; 
+   END;
+   $BODY$
+  LANGUAGE plpgsql 
+
+call sps_rempresa('0005') 
+
+CREATE OR REPLACE PROCEDURE public.sps_empresa("emp" bpchar, "anio_bus" int4)
+LANGUAGE 'plpgsql'
+  AS $BODY$     
+   DECLARE        sql_result record;     
+  sql text;        sqlSuma text;   
+  BEGIN         sql = '    select cast(nom_emp as character(100)) as nom_emp, 
+  cast(dir_emp  as character(100)) as nom_emp
+   from coempre';              
+   FOR sql_result in EXECUTE sql LOOP               
+   END LOOP;        --drop table empresa_tmp; 
+   END;
+   $BODY$
+  call sps_empresa('prueba', 0005)

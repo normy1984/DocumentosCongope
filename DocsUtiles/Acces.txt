@@ -1,0 +1,303 @@
+Servidor base de datos
+Sistema Operativo: Fedora 37
+Memoria RAM: 8GB
+Espacio en Disco: 50GB.
+Procesadores : 2
+Núcleos: 8
+
+Datos de Acceso:
+
+Sistema Operativo:
+
+IP: 172.24.5.34
+Usuario: root
+Clave: Clave123
+
+PostgreSQL
+
+Usuario: postgres
+Clave: financiero
+Puerto:5432
+
+gitlab actual
+https://git.congope.gob.ec/
+narcos@congope.gob.ec
+c0ng0p31
+
+Poner que no aplica el uso de scrum por los trabajos administrativos y porque por disposicion del director de tecnologias se delego actividades para cada desarrollador
+se demoro mucho cuentas contables
+crece exponencialmente controladores clases y logicas de negocio
+directamente  double en el modelo
+
+Miro
+https://miro.com/app/board/uXjVKzruXY0=/
+congope123
+
+Wifi colaboradores
+C0ng0Col4b*2o23
+F y Sercop Capacitacion
+Mechica12
+Cuenta ia compras publicas
+congope123
+
+RA SRI 1719235432001
+Mechica11.
+023801750 financiero@congope.gob.ec
+
+Datos Factura
+Pago 9 Período: 11 de Noviembre de 2024 al 10 de Diciembre 2024
+Pago 10 Período: 11 de Diciembre de 2024 al 31 de Diciembre 2024
+
+LA MARISCAL, WILSON E8-166 Y AV.6 DE DICIEMBRE, EDIFICIO CONGOPE
+financiero@congope.gob.ec
+023801750
+Retienen 10%
+1760005110001 Congope
+
+Maquina
+Congope1420  
+	  
+servidor: SERVICIOS
+Front
+En el servidor de contingencia puedan utilizar uno de los ambientes:
+SO: Centos 7.9
+IP: 172.24.5.23
+Usuario: root
+Contraseña: congope24
+
+Servicios
+IP : 172.24.5.34
+Usuario: admin
+Clave: clave123
+Bdd postgres
+
+IP: 172.24.5.35
+SSH:
+      usuario: bitnami
+      clave: bitnami
+GITWEB:
+      usuario: root
+      clave: TxLRy5p2kGU:
+
+ZOOM
+Congope123
+narcos@
+
+https://mobaxterm.mobatek.net/download-home-edition.html
+
+http://172.24.5.34:5142/api/Pdf
+
+0401030523001
+yOFj3s58
+
+Quipux y Sonar
+Congope123
+
+Curso Seguridad
+usuario:normy
+Congope12.
+
+admincongope
+$erv.c0ng0p3.d1r3
+
+92.1 emisora cristiana
+98.5 relax
+
+ESRI
+congope123
+
+sanar nuestros traumas para responder de buena forma, incluso desde la concepcion 
+
+nuevo gitlab
+https://172.24.5.35/congopegit/congopesfgprov.git
+http://172.24.5.153:4200/
+https://git.congope.gob.ec/
+----------------------------------------
+ servidor = "172.24.5.153",
+ sUid = "postgres",
+ sPassword = "postgres",
+ sDatabase = "contabilidad",
+ sPort = "5432"
+
+Socio Empleo
+171..
+Mechica1
+
+Declaracion Juramentada tambien https://www.aicad.es/user-panel/ y el usuario normyarcos@gmail.com
+Mechica12
+
+
+Poner al destinatario ej certificacion POA
+
+Rutas de maquinas virtuales
+C:\Users\narcos\VirtualBox VMs
+
+http://localhost:100/login
+Llancañan:admin -1710922269
+Clave: Congope2024#
+
+https://sfgprov.congope.gob.ec/nomina/
+1719235432001
+1719235432001
+
+
+WINSCP repositorio php y bdd
+172.24.5.153
+user_web
+userweb
+
+https://tickets.congope.gob.ec/otrs/index.pl
+mismo usuario de red
+
+1306 
+1305 Diana Pozo
+
+
+
+https://broadcom.okta.com/app/broadcom_oktasamlauthhubprod_1/exkyj1x6etaOXrHIy2p7/sso/saml?LoginHint=Normy	
+Vmware
+Normy
+Congope2024#
+#
+Codigo Postal Quito Distrito Metropolitano 170203
+
+Cuenta temporal Esri
+E6_congope
+Narcos1_
+10:10
+
+MySQl, Servidor localGPD2
+192.168.153.128
+root
+Congope2025.
+por si acaso probar congope2025.
+
+
+SFGPRovWeb27062025
+http://192.168.50.54/sfgprov/#/authentication/signin
+Congope1-
+
+Maquina Virtual Ambiente Local
+Llancaynan
+root
+Congope2025.
+
+Llankaynan Cta Normi
+http://llankaynan.congope.gob.ec
+1719235432
+C@ngope1
+
+
+Llankaynan Administrador Prod
+Usuario: admin
+Contraseña: Congope123,
+Llankaynan Prod Base 192.168.50.14 ProdG
+base:llankay
+root
+C0ngope1.2025
+
+Credenciales local llankaynan maquina virtual
+Servidor: 192.168.153.128
+root
+Congope2025.
+ 
+root
+admin
+adminpass
+Credenciales administrador
+correo electrónico: admin@admin.com
+• Contraseña: Congope@123
+
+GPRD2 TESTING FUNCIONA GXr Testing
+192.168.50.61
+Enlace de acceso: http://congope-gprd2.congope.gob.ec/login
+Usuario: admin
+Contraseña: Congope@2025
+EL ORO: https://eloro-gprd2.congope.gob.ec/login
+ACCESO SSH al docker Laravel: 192.168.50.61:2222 testing
+Usuario: root
+Contraseña: Docker!
+/var/www/html/app/Http/Controllers/
+
+Base de Datos Testing GxR
+Base de datos: 192.168.50.61:5432
+Usuario: postgres
+Contraseña: postgres
+
+GxR Local con Vmware con postgres falta ambiente GPR1 con Mysql para el oro, se puede intentar con postgres
+http://gprd2.local/index/1
+Usuario: admin
+Contraseña: Congope@2025
+
+SFGProv Web Testing
+http://192.168.50.54/sfgprov/#/authentication/signin
+
+Enlace de acceso: http://congope-gprd2.congope.gob.ec/login
+Usuario: admin
+Contraseña: Congope@2025
+
+# Postgres connectionPROD
+DB_PG_CONNECTION=pgsql
+DB_PG_HOST=192.168.40.31
+DB_PG_PORT=5432
+DB_PG_DATABASE=contabilidad
+DB_PG_SCHEMA=public
+DB_PG_USERNAME=plan_pre
+DB_PG_PASSWORD=Gprd_2025.
+
+
+SFGProvWeb
+IP: 192.168.50.54
+usuario:congope
+contraseña:Ecu.2025
+
+
+
+Talento Humano testing
+192.168.50.15
+root
+naner2025
+// DB TRANSACCIONAL
+define('DB_DRIVER', 'postgre');
+define('DB_HOSTNAME', '192.168.50.15');
+define('DB_USERNAME', 'postgres');
+define('DB_PASSWORD', 'congope2025');
+define('DB_DATABASE', 'conta_permisos_2025');
+define('DB_PORT', '5432');
+
+Talento humano local arrancar xampp
+17..001
+norma
+1715645691001 Alejandro, Director Permisos
+
+gprd2 administrador
+http://172.24.5.153/admin/login
+Usuario: admin@admin.com
+Contraseña: Congope@123
+
+Viáticos
+http://192.168.50.15/viaticos
+1719235432001igual
+
+GPRD" local no vale
+http://192.168.153.128/index.php
+
+0999568603
+
+872923023536
+
+hotamil 
+Mechica3
+
+192.168.153.132 Maquina virtual
+root
+Congope1.
+
+Maquina Local
+Congope2520
+
+Servicio Nacional de
+Contratación Pública, para el ejercicio fiscal 2025, para lo cual pueden revisarlo en el
+siguiente link:
+https://portal.compraspublicas.gob.ec/sercop/montos-de-contratacion-publica-agosto-2025/.
+
